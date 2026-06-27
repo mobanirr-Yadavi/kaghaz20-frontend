@@ -1,0 +1,28 @@
+import { products } from "@/data/products";
+import { Container } from "@/components/ui/Container";
+import { ProductCard } from "@/components/ui/ProductCard";
+
+export function ProductSection() {
+  return (
+    <section className="pb-4">
+      <Container>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-black text-textNavy">محصولات پرفروش</h2>
+            <span className="h-px w-6 bg-buttonGold" />
+          </div>
+          <a className="shrink-0 text-xs font-bold text-royal sm:text-sm" href="/shop">
+            مشاهده همه محصولات ←
+          </a>
+        </div>
+        <div className="relative">
+          <div className="grid grid-cols-2 gap-3 pb-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-5">
+            {products.map((product) => (
+              <ProductCard product={product} key={product.id} />
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
