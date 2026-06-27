@@ -26,27 +26,4 @@ export const categories: Category[] = [
     subtitle: "297 x 420 mm",
     image: "/images/category-a3.png",
   },
-  {
-    id: "colored",
-    title: "کاغذ رنگی",
-    subtitle: "انواع رنگی",
-    image: "/images/category-colored-paper.png",
-  },
-  {
-    id: "glossy",
-    title: "کاغذ گلاسه",
-    subtitle: "چاپ حرفه‌ای",
-    image: "/images/category-glossy-paper.png",
-  },
-  {
-    id: "writing",
-    title: "کاغذ تحریر",
-    subtitle: "کیفیت بالا",
-    image: "/images/category-writing-paper.png",
-  },
-  {
-    id: "all",
-    title: "مشاهده دسته‌بندی‌ها",
-    dark: true,
-  },
 ];

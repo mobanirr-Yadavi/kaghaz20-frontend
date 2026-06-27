@@ -6,7 +6,7 @@ export function CategoryStrip() {
   return (
     <section className="py-5">
       <Container>
-        <div className="scrollbar-hide flex snap-x gap-4 overflow-x-auto pb-1">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {categories.map((category) => (
             <CategoryCard category={category} key={category.id} />
           ))}

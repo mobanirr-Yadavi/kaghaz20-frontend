@@ -2,14 +2,14 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 
 const bannerClass =
-  "block h-auto w-full object-contain lg:absolute lg:inset-0 lg:h-full lg:object-cover";
+  "absolute inset-0 h-full w-full object-fill";
 
 export function PromoBanners() {
   return (
     <section className="pb-2" aria-label="پیشنهادها و ضمانت محصولات">
       <Container>
         <div className="grid gap-4 sm:gap-5 lg:grid-cols-2">
-          <div className="relative overflow-hidden rounded-[clamp(10px,1.8vw,28px)] shadow-premium lg:aspect-[4.25/1]">
+          <div className="relative h-[120px] overflow-hidden rounded-[clamp(10px,1.8vw,28px)] shadow-premium sm:h-[145px] lg:aspect-[4.25/1] lg:h-auto">
             <Image
               src="/images/banner-discount.png"
               alt="تخفیف‌های ویژه برای خرید عمده"
@@ -19,7 +19,7 @@ export function PromoBanners() {
               className={bannerClass}
             />
           </div>
-          <div className="relative overflow-hidden rounded-[clamp(10px,1.8vw,28px)] shadow-premium lg:aspect-[4.25/1]">
+          <div className="relative h-[120px] overflow-hidden rounded-[clamp(10px,1.8vw,28px)] shadow-premium sm:h-[145px] lg:aspect-[4.25/1] lg:h-auto">
             <Image
               src="/images/banner-guarantee.png"
               alt="ضمانت صد درصد اصالت کالای کاغذ ۲۰"
