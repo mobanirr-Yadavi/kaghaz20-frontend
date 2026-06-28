@@ -13,7 +13,6 @@ import { ProductGrid } from "./ProductGrid";
 import { QualityGuaranteeBanner } from "./QualityGuaranteeBanner";
 import { ShopPagination } from "./ShopPagination";
 import { ShopFAQ } from "./ShopFAQ";
-import { ShopNewsletter } from "./ShopNewsletter";
 
 export function ShopPageClient() {
   const { addItem } = useCart();
@@ -49,7 +48,7 @@ export function ShopPageClient() {
     {filtersOpen && <div className="fixed inset-0 z-[70] bg-navy/45 p-4 lg:hidden" onClick={() => setFiltersOpen(false)}><div className="mx-auto mt-8 max-h-[85vh] max-w-md overflow-y-auto rounded-2xl" onClick={(event) => event.stopPropagation()}>{filters}<button className="sticky bottom-0 h-12 w-full rounded-b-xl bg-buttonGold font-black text-white" onClick={() => setFiltersOpen(false)} type="button">اعمال فیلتر و مشاهده نتایج</button></div></div>}
     <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
       <div className="hidden lg:block">{filters}</div>
-      <main><ShopToolbar count={list.length} sort={sort} setSort={setSort} /><ProductGrid products={list} onAdd={add} /><QualityGuaranteeBanner /><ShopPagination /><div className="grid gap-5 lg:grid-cols-[.85fr_1.45fr]"><ShopFAQ /><ShopNewsletter /></div></main>
+      <main><ShopToolbar count={list.length} sort={sort} setSort={setSort} /><ProductGrid products={list} onAdd={add} /><QualityGuaranteeBanner /><ShopPagination /><ShopFAQ /></main>
     </div>
   </Container>;
 }

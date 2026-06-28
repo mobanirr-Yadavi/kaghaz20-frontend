@@ -46,12 +46,11 @@ export function StorePageClient() {
             <ProductGrid products={filteredProducts} />
             <Image alt="ضمانت اصالت کالا" className="mt-5 h-auto w-full rounded-xl object-cover shadow-card" height={106} src="/images/pages/store-original-banner.png" width={779} />
             <Pagination />
-            <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_1.45fr]">
+            <div className="mt-6">
               <div className="rounded-xl bg-white p-5 shadow-card">
                 <h3 className="mb-3 text-center font-black text-navy">سوالات متداول</h3>
                 {faqs.map((faq) => <div className="border-b border-borderBlue py-2 text-sm font-bold text-textNavy last:border-0" key={faq}>+ {faq}</div>)}
               </div>
-              <Image alt="خبرنامه تخفیف‌ها" className="h-full min-h-[100px] w-full rounded-xl object-cover shadow-card" height={99} src="/images/pages/store-newsletter.png" width={492} />
             </div>
           </section>
         </div>

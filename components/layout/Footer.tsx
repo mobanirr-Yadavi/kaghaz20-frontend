@@ -54,13 +54,13 @@ export function Footer() {
               <Image alt="کاغذ ۲۰" className="h-auto w-[118px]" height={72} src="/images/logo-kaghaz20.png" width={150} />
             </div>
             <ul className="space-y-2 text-xs font-semibold text-white/82">
-              <li>021-9100-7070</li>
-              <li>info@kaghaz20.com</li>
-              <li>تهران، خیابان جردن، پلاک ۲۰</li>
+              <li dir="ltr" className="text-right">09382302930</li>
+              <li>info@kaghaz20.ir</li>
+              <li className="leading-6">تهران، بلوار میرداماد، خیابان کازرون شمالی، خیابان نیک‌رای، پلاک ۲، طبقه سوم، واحد ۶</li>
             </ul>
             <div className="mt-4 flex gap-2">
-              <a aria-label="ارسال ایمیل" className="grid size-8 place-items-center rounded-full bg-white/12 text-xs font-black transition hover:bg-buttonGold hover:text-navy" href="mailto:info@kaghaz20.com">@</a>
-              <a aria-label="تماس تلفنی" className="grid size-8 place-items-center rounded-full bg-white/12 text-xs font-black transition hover:bg-buttonGold hover:text-navy" href="tel:+982191007070">☎</a>
+              <a aria-label="ارسال ایمیل" className="grid size-8 place-items-center rounded-full bg-white/12 text-xs font-black transition hover:bg-buttonGold hover:text-navy" href="mailto:info@kaghaz20.ir">@</a>
+              <a aria-label="تماس تلفنی" className="grid size-8 place-items-center rounded-full bg-white/12 text-xs font-black transition hover:bg-buttonGold hover:text-navy" href="tel:+989382302930">☎</a>
             </div>
           </div>
         </div>

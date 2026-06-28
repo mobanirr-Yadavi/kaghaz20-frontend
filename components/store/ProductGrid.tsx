@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
-import { CartIcon, HeartIcon } from "@/components/ui/Icons";
+import { HeartIcon } from "@/components/ui/Icons";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 
 export function StoreProductCard({ product }: { product: Product }) {
   return (
-    <article className="relative rounded-xl bg-white p-4 shadow-card">
+    <article className="relative min-w-0 rounded-xl bg-white p-3 shadow-card sm:p-4">
       {product.badge ? <span className="absolute right-4 top-4 rounded-md bg-buttonGold px-3 py-1 text-xs font-black text-white">{product.badge.label}</span> : null}
       <button className="absolute left-4 top-4 text-[#A7B1C9]" type="button" aria-label="علاقه‌مندی">
         <HeartIcon className="size-5" />
@@ -21,9 +22,7 @@ export function StoreProductCard({ product }: { product: Product }) {
       </div>
       <p className="mt-2 text-center text-base font-black text-navy">{product.price}</p>
       <div className="mt-4 grid grid-cols-[1fr_48px] gap-3">
-        <button className="grid h-10 place-items-center rounded-lg bg-navy text-white" type="button" aria-label="افزودن به سبد">
-          <CartIcon className="size-5" />
-        </button>
+        <AddToCartButton product={product} className="grid h-10 place-items-center rounded-lg bg-navy text-white" />
         <Link className="grid h-10 place-items-center rounded-lg border border-borderBlue text-navy" href={`/products/${product.slug}`}>◎</Link>
       </div>
     </article>
@@ -32,7 +31,7 @@ export function StoreProductCard({ product }: { product: Product }) {
 
 export function ProductGrid({ products }: { products: Product[] }) {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-5 xl:grid-cols-4">
       {products.map((product) => <StoreProductCard key={product.id} product={product} />)}
     </div>
   );
