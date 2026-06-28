@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Product } from "@/types/product";
 import { Button } from "@/components/ui/Button";
 import { QuantitySelector } from "@/components/ui/QuantitySelector";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 
 export function ProductInfo({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
@@ -32,7 +33,7 @@ export function ProductInfo({ product }: { product: Product }) {
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <QuantitySelector value={quantity} onChange={setQuantity} />
         <Button variant="gold" className="min-w-[190px]">خرید عمده و استعلام قیمت</Button>
-        <Button variant="navy" className="min-w-[170px]">افزودن به سبد خرید</Button>
+        <AddToCartButton product={product} quantity={quantity} label="افزودن به سبد خرید" className="inline-flex min-h-12 min-w-[190px] items-center justify-center gap-2 rounded-lg bg-navy px-5 font-black text-white" />
       </div>
       <div className="mt-5 grid grid-cols-3 gap-3 text-center text-xs font-bold text-muted">
         <span>ضمانت اصالت</span>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CartIcon, GridIcon, UserIcon } from "@/components/ui/Icons";
+import { CartLink } from "@/components/cart/CartLink";
 
 function HomeIcon({ className = "" }: { className?: string }) {
   return (
@@ -27,6 +28,7 @@ export function MobileBottomNav() {
       <div className="mx-auto grid max-w-md grid-cols-4 gap-1 sm:gap-2">
         {items.map((item) => {
           const active = item.match.some((match) => (match === "/" ? pathname === "/" : pathname.startsWith(match)));
+          if (item.href === "/cart") return <CartLink mobile key={item.label} />;
           const Icon = item.icon;
           return (
             <Link

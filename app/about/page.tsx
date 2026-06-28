@@ -15,7 +15,7 @@ const history = [["۱۹۹۱","تأسیس شرکت"],["۱۹۹۶","گسترش تو
 
 export default function AboutPage() {
   return <><Header /><main className="site-page about-page">
-    <section><StandardHero src="/images/pages/about-hero.png" alt="درباره کاغذ ۲۰ و محصولات Double A" imageClassName="object-[52%_center] lg:object-center" /></section>
+    <section><StandardHero src="/images/pages/about-hero.png" alt="درباره کاغذ ۲۰ و محصولات Double A" imageClassName="!object-cover object-[52%_center] lg:object-center" frameClassName="h-[220px] sm:h-[300px] lg:h-[400px]" /></section>
     <section className="about-story panel">
       <div className="story-image"><Image src="/images/pages/about-building.png" alt="ساختمان دابل ای" fill sizes="(max-width: 800px) 100vw, 35vw"/><span><b>بیش از ۳۰ سال</b> تجربه در تولید کاغذ با کیفیت</span></div>
       <div className="story-copy"><p className="eyebrow">درباره ما</p><h1>از یک رویا تا برندی جهانی</h1><p>در سال ۱۹۹۱ در تایلند تأسیس شد با هدف تولید کاغذ با کیفیت بالا که نیازهای حرفه‌ای کاربران را برآورده کند. امروز ما نه تنها محصولاتی با کیفیت را در بیش از ۱۰۰ کشور عرضه می‌کنیم، بلکه میلیون‌ها کاربر به کیفیت و عملکرد ما اعتماد دارند.</p><p>ما در کاغذ Double A باور داریم که کیفیت، پایداری و نوآوری سه اصل اساسی در هر کسب‌وکار موفق هستند.</p>

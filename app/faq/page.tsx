@@ -1,0 +1,3 @@
+import type { Metadata } from "next"; import { CustomerPage } from "@/components/customer/CustomerPage"; import { FaqAccordion } from "@/components/customer/FaqAccordion";
+export const metadata: Metadata = { title: "سوالات متداول" };
+export default function Page(){return <CustomerPage eyebrow="مرکز راهنمایی" title="سوالات متداول" description="پاسخ روشن و سریع به پرسش‌هایی که پیش از خرید، ارسال و تحویل سفارش دارید." icon="؟" sections={[{icon:"✓",title:"خرید مطمئن",text:"مشخصات و قیمت محصولات شفاف است و اصالت کالا تضمین می‌شود."},{icon:"▦",title:"ارسال سفارش",text:"زمان و شیوه ارسال بر اساس مقصد و حجم سفارش با شما هماهنگ می‌شود."},{icon:"☏",title:"پشتیبانی انسانی",text:"اگر پاسخ خود را پیدا نکردید، کارشناسان ما کنار شما هستند."}]}><FaqAccordion /></CustomerPage>}

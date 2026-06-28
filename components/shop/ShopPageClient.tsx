@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { shopProducts } from "@/data/products";
 import { shopCategories } from "@/data/shopCategories";
 import type { Product } from "@/types/product";
+import { useCart } from "@/components/cart/CartProvider";
 import { ShopCategoryTabs } from "./ShopCategoryTabs";
 import { ShopFilterSidebar } from "./ShopFilterSidebar";
 import { ShopToolbar } from "./ShopToolbar";
@@ -15,6 +16,7 @@ import { ShopFAQ } from "./ShopFAQ";
 import { ShopNewsletter } from "./ShopNewsletter";
 
 export function ShopPageClient() {
+  const { addItem } = useCart();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [brand, setBrand] = useState("");
@@ -38,13 +40,7 @@ export function ShopPageClient() {
   }, [search, category, brand, size, onlyAvailable, maxPrice, sort]);
 
   const clear = () => { setSearch(""); setCategory("all"); setBrand(""); setSize(""); setOnlyAvailable(false); setMaxPrice(5000000); };
-  const add = (product: Product) => {
-    const raw = localStorage.getItem("kaghaz20-cart");
-    const cart: Record<string, number> = raw ? JSON.parse(raw) : {};
-    cart[product.id] = (cart[product.id] || 0) + 1;
-    localStorage.setItem("kaghaz20-cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cart-updated"));
-  };
+  const add = (product: Product) => addItem(product);
   const filters = <ShopFilterSidebar search={search} setSearch={setSearch} category={category} setCategory={setCategory} brand={brand} setBrand={setBrand} size={size} setSize={setSize} onlyAvailable={onlyAvailable} setOnlyAvailable={setOnlyAvailable} maxPrice={maxPrice} setMaxPrice={setMaxPrice} clear={clear} />;
 
   return <Container className="pb-8">

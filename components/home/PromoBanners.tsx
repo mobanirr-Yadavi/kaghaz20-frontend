@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 
 const bannerClass =
-  "absolute inset-0 h-full w-full object-fill";
+  "absolute inset-0 h-full w-full bg-softBlue object-contain";
 
 export function PromoBanners() {
   return (

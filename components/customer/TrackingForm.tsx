@@ -1,0 +1,3 @@
+"use client";
+import { useState } from "react";
+export function TrackingForm() { const [message, setMessage] = useState(""); return <section className="tracking-card"><div><span>⌖</span><h2>پیگیری سریع سفارش</h2><p>شماره سفارش و موبایل زمان خرید را وارد کنید.</p></div><form onSubmit={(e) => { e.preventDefault(); setMessage("درخواست شما ثبت شد. اتصال به سامانه سفارش در نسخه نهایی بک‌اند فعال می‌شود."); }}><label>شماره سفارش<input required inputMode="numeric" placeholder="مثلاً ۲۰۴۸۱" /></label><label>شماره موبایل<input required inputMode="tel" pattern="09[0-9]{9}" placeholder="۰۹۱۲۱۲۳۴۵۶۷" /></label><button>بررسی وضعیت سفارش</button>{message && <p role="status">{message}</p>}</form></section>; }

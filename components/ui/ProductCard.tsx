@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
-import { CartIcon } from "@/components/ui/Icons";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 
 type ProductCardProps = {
   product: Product;
@@ -32,14 +32,12 @@ export function ProductCard({ product }: ProductCardProps) {
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-end self-stretch pt-2 sm:pt-7">
-        <Link href="/shop">
+        <Link href={`/products/${product.slug}`}>
           <h3 className="truncate text-xs font-black text-textNavy">{product.title}</h3>
         </Link>
         <p className="mt-1 text-[11px] font-bold text-muted">{product.meta}</p>
         <div className="mt-auto flex items-end justify-between gap-3">
-          <Link className="grid size-8 shrink-0 place-items-center rounded-md bg-[#0047C9] text-white transition hover:bg-navy" href="/shop" aria-label="انتخاب و افزودن به سبد خرید">
-            <CartIcon className="size-5" />
-          </Link>
+          <AddToCartButton product={product} className="grid size-8 shrink-0 place-items-center rounded-md bg-[#0047C9] text-white transition hover:bg-navy" />
           <div className="text-left">
             {product.oldPrice ? (
               <p className="text-[10px] font-semibold text-[#B8BECF] line-through">{product.oldPrice}</p>

@@ -1,11 +1,11 @@
-export const quickLinks = ["صفحه اصلی", "فروشگاه", "مجله", "درباره ما", "تماس با ما"];
+export const quickLinks = [{ label: "صفحه اصلی", href: "/" }, { label: "فروشگاه", href: "/shop" }, { label: "مجله", href: "/blog" }, { label: "درباره ما", href: "/about" }, { label: "تماس با ما", href: "/contact" }];
 
 export const customerLinks = [
-  "سوالات متداول",
-  "رویه‌های پرداخت",
-  "پیگیری سفارش",
-  "شرایط و قوانین",
-  "حریم خصوصی",
+  { label: "سوالات متداول", href: "/faq" },
+  { label: "رویه‌های پرداخت", href: "/payment-methods" },
+  { label: "پیگیری سفارش", href: "/order-tracking" },
+  { label: "شرایط و قوانین", href: "/terms" },
+  { label: "حریم خصوصی", href: "/privacy" },
 ];
 
 export const licenseItems = [

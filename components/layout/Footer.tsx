@@ -1,17 +1,16 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { customerLinks, quickLinks } from "@/data/footerLinks";
 
-function FooterList({ title, items }: { title: string; items: string[] }) {
+function FooterList({ title, items }: { title: string; items: { label: string; href: string }[] }) {
   return (
     <div>
       <h3 className="mb-4 text-sm font-black text-white">{title}</h3>
       <ul className="space-y-2 text-xs font-semibold leading-6 text-white/78">
         {items.map((item) => (
-          <li key={item}>
-            <a className="transition hover:text-buttonGold" href="#">
-              {item}
-            </a>
+          <li key={item.href}>
+            <Link className="transition hover:text-buttonGold" href={item.href}>{item.label}</Link>
           </li>
         ))}
       </ul>
@@ -46,9 +45,9 @@ export function Footer() {
             <p className="max-w-[250px] text-xs font-semibold leading-7 text-white/78">
               مرکز تخصصی فروش کاغذ Double A با ضمانت اصالت، کیفیت و خدمات پس از فروش حرفه‌ای
             </p>
-            <a className="mt-4 inline-block text-sm font-black text-buttonGold" href="#">
+            <Link className="mt-4 inline-block text-sm font-black text-buttonGold" href="/about">
               بیشتر درباره ما ←
-            </a>
+            </Link>
           </div>
           <div>
             <div className="mb-4 inline-flex rounded-xl bg-white px-3 py-2 shadow-soft">
@@ -60,16 +59,8 @@ export function Footer() {
               <li>تهران، خیابان جردن، پلاک ۲۰</li>
             </ul>
             <div className="mt-4 flex gap-2">
-              {["ig", "tg", "wa", "in"].map((icon) => (
-                <a
-                  aria-label={icon}
-                  className="grid size-8 place-items-center rounded-full bg-white/12 text-[11px] font-black text-white transition hover:bg-buttonGold hover:text-navy"
-                  href="#"
-                  key={icon}
-                >
-                  {icon}
-                </a>
-              ))}
+              <a aria-label="ارسال ایمیل" className="grid size-8 place-items-center rounded-full bg-white/12 text-xs font-black transition hover:bg-buttonGold hover:text-navy" href="mailto:info@kaghaz20.com">@</a>
+              <a aria-label="تماس تلفنی" className="grid size-8 place-items-center rounded-full bg-white/12 text-xs font-black transition hover:bg-buttonGold hover:text-navy" href="tel:+982191007070">☎</a>
             </div>
           </div>
         </div>

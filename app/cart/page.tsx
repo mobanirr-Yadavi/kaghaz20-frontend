@@ -10,8 +10,8 @@ export default function CartPage() {
       <Header />
       <main className="py-3 sm:py-4">
         <Container>
-          <div className="relative mb-4 h-[92px] overflow-hidden rounded-xl shadow-premium sm:mb-6 sm:h-[150px]">
-            <Image alt="سبد خرید" className="object-cover" fill priority sizes="100vw" src="/images/pages/cart-hero.png" />
+          <div className="relative mb-4 h-[110px] overflow-hidden rounded-xl bg-softBlue shadow-premium sm:mb-6 sm:h-[150px]">
+            <Image alt="سبد خرید" className="object-contain" fill priority sizes="100vw" src="/images/pages/cart-hero.png" />
           </div>
           <CartPageClient />
         </Container>

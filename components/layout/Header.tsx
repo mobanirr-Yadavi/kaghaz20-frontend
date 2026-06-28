@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CartIcon, UserIcon } from "@/components/ui/Icons";
+import { UserIcon } from "@/components/ui/Icons";
+import { CartLink } from "@/components/cart/CartLink";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { Container } from "@/components/ui/Container";
 import { NavigationBar } from "@/components/layout/NavigationBar";
@@ -18,7 +19,7 @@ export function Header() {
             <SearchBar />
           </div>
           <div className="hidden shrink-0 items-center gap-2 text-navy sm:flex xl:gap-3">
-            <Link className="relative grid size-9 place-items-center rounded-full transition hover:bg-softBlue" href="/cart" aria-label="سبد خرید"><CartIcon className="size-6" /></Link>
+            <CartLink />
             <Link className="grid size-9 place-items-center rounded-full transition hover:bg-softBlue" href="/login" aria-label="حساب کاربری"><UserIcon className="size-6" /></Link>
           </div>
         </div>
