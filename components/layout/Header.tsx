@@ -20,7 +20,7 @@ export function Header() {
           </div>
           <div className="hidden shrink-0 items-center gap-2 text-navy sm:flex xl:gap-3">
             <CartLink />
-            <Link className="grid size-9 place-items-center rounded-full transition hover:bg-softBlue" href="/login" aria-label="حساب کاربری"><UserIcon className="size-6" /></Link>
+            <Link className="grid size-9 place-items-center rounded-full transition hover:bg-softBlue" href="/account" aria-label="حساب کاربری"><UserIcon className="size-6" /></Link>
           </div>
         </div>
       </Container>

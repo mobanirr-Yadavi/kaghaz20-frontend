@@ -1,8 +1,10 @@
 import { products } from "@/data/products";
+import { getProducts } from "@/lib/api";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/ui/ProductCard";
 
-export function ProductSection() {
+export async function ProductSection() {
+  const apiProducts = await getProducts().catch(() => products);
   return (
     <section className="pb-4">
       <Container>
@@ -17,7 +19,7 @@ export function ProductSection() {
         </div>
         <div className="relative">
           <div className="grid grid-cols-2 gap-2.5 pb-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-            {products.map((product) => (
+            {apiProducts.map((product) => (
               <ProductCard product={product} key={product.id} />
             ))}
           </div>

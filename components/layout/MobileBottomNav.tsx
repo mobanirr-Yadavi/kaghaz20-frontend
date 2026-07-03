@@ -17,7 +17,7 @@ const items = [
   { label: "خانه", href: "/", icon: HomeIcon, match: ["/"] },
   { label: "فروشگاه", href: "/shop", icon: GridIcon, match: ["/shop", "/store", "/products"] },
   { label: "سبد خرید", href: "/cart", icon: CartIcon, match: ["/cart"] },
-  { label: "حساب کاربری", href: "/login", icon: UserIcon, match: ["/login", "/register"] },
+  { label: "حساب کاربری", href: "/account", icon: UserIcon, match: ["/account", "/login", "/register"] },
 ];
 
 export function MobileBottomNav() {

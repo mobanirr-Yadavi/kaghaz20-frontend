@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { Container } from "@/components/ui/Container";
-import { shopProducts } from "@/data/products";
 import { shopCategories } from "@/data/shopCategories";
 import type { Product } from "@/types/product";
 import { useCart } from "@/components/cart/CartProvider";
@@ -14,7 +13,7 @@ import { QualityGuaranteeBanner } from "./QualityGuaranteeBanner";
 import { ShopPagination } from "./ShopPagination";
 import { ShopFAQ } from "./ShopFAQ";
 
-export function ShopPageClient() {
+export function ShopPageClient({ products }: { products: Product[] }) {
   const { addItem } = useCart();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -26,7 +25,7 @@ export function ShopPageClient() {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const list = useMemo(() => {
-    let result = shopProducts.filter((product) =>
+    let result = products.filter((product) =>
       (!search || product.title.includes(search) || product.englishTitle.toLowerCase().includes(search.toLowerCase())) &&
       (category === "all" || product.category === category || product.size.startsWith(category)) &&
       (!brand || product.brand === brand) && (!size || product.size.startsWith(size)) &&
@@ -36,7 +35,7 @@ export function ShopPageClient() {
     if (sort === "expensive") result = [...result].sort((a, b) => b.priceValue - a.priceValue);
     if (sort === "rating") result = [...result].sort((a, b) => b.rating - a.rating);
     return result;
-  }, [search, category, brand, size, onlyAvailable, maxPrice, sort]);
+  }, [products, search, category, brand, size, onlyAvailable, maxPrice, sort]);
 
   const clear = () => { setSearch(""); setCategory("all"); setBrand(""); setSize(""); setOnlyAvailable(false); setMaxPrice(5000000); };
   const add = (product: Product) => addItem(product);

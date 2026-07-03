@@ -1,0 +1,12 @@
+import type { AdminStats, AdminUser, Order, Profile } from "@/lib/account";
+import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
+
+export function AdminDashboard({ profile, stats, orders, users }: { profile: Profile; stats: AdminStats; orders: Order[]; users: AdminUser[] }) {
+  return <main className="dashboard-shell admin-dashboard"><DashboardSidebar profile={profile} admin/><section className="dash-content">
+    <header className="dash-welcome admin-head"><div><h1>خوش آمدید، مدیر سیستم 👋</h1><p>نمای کلی عملکرد فروشگاه کاغذ ۲۰</p></div><a href="/">▣ مشاهده سایت</a></header>
+    <div className="metric-grid admin-metrics"><article><i>◇</i><span>تعداد محصولات<b>{money(stats.totalProducts)}</b><small>محصول</small></span></article><article><i>▢</i><span>تعداد سفارش‌ها<b>{money(stats.totalOrders)}</b><small>سفارش</small></span></article><article><i>♙</i><span>تعداد مشتریان<b>{money(stats.totalUsers)}</b><small>مشتری</small></span></article><article><i>◉</i><span>کل فروش<b>{money(stats.totalRevenue)}</b><small>تومان</small></span></article></div>
+    <div className="admin-grid"><section className="dash-card chart-card"><div className="card-title"><h2>نمودار فروش</h2><span>فروش (تومان)</span></div><div className="fake-chart"><i/><i/><i/><i/><i/><i/><i/></div></section><section className="dash-card donut-card"><div className="card-title"><h2>وضعیت سفارش‌ها</h2></div><div className="donut"><b>{stats.totalOrders}<small>سفارش</small></b></div><ul><li>در حال پردازش</li><li>ارسال شده</li><li>تکمیل شده</li></ul></section>
+      <section className="dash-card admin-orders"><div className="card-title"><h2>سفارش‌های اخیر</h2></div>{orders.length ? <div className="table-wrap"><table><thead><tr><th>سفارش</th><th>مشتری</th><th>مبلغ</th><th>وضعیت</th></tr></thead><tbody>{orders.slice(0,5).map(o=><tr key={o.id}><td>#{o.id.slice(0,7)}</td><td>{o.receiverFullName}</td><td>{money(o.totalAmount)}</td><td><span className={`status ${o.status.toLowerCase()}`}>{o.status}</span></td></tr>)}</tbody></table></div>:<EmptyRows text="سفارشی وجود ندارد."/>}</section>
+      <section className="dash-card new-users"><div className="card-title"><h2>مشتریان جدید</h2></div>{users.length ? <div className="table-wrap"><table><thead><tr><th>مشتری</th><th>ایمیل</th><th>عضویت</th></tr></thead><tbody>{users.slice(0,5).map(u=><tr key={u.id}><td>{u.firstName} {u.lastName}</td><td>{u.email}</td><td>{date(u.createdAt)}</td></tr>)}</tbody></table></div>:<EmptyRows text="کاربری وجود ندارد."/>}</section>
+    </div></section></main>;
+}
