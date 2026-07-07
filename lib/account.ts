@@ -1,7 +1,9 @@
 export type Profile = { id: string; firstName: string; lastName: string; userName: string; email: string; phoneNumber: string; role: string };
 export type Order = { id: string; status: string; totalAmount: number; receiverFullName: string; createdAt: string; items: { productName: string }[] };
 export type AdminStats = { totalUsers: number; totalOrders: number; totalProducts: number; totalRevenue: number };
-export type AdminUser = { id: string; firstName: string; lastName: string; email: string; role: string; createdAt: string };
+export type AdminUser = { id: string; firstName: string; lastName: string; userName: string; email: string; phoneNumber: string; role: string; createdAt: string };
+export type AdminCategory = { id: string; name: string; description?: string | null };
+export type AdminProduct = { id: string; name: string; description?: string | null; price: number; stock: number; categoryId: string; categoryName?: string | null };
 
 const API_URL = (process.env.PAPER_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5016").replace(/\/$/, "");
 

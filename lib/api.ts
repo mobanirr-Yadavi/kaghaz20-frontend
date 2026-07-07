@@ -6,6 +6,7 @@ type ApiProduct = { id: string; name: string; description?: string | null; price
 type ApiCategory = { id: string; name: string; description?: string | null };
 
 const API_URL = (process.env.PAPER_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5016").replace(/\/$/, "");
+const DEFAULT_PRODUCT_IMAGE = "/images/double-a-uploaded.png";
 
 async function apiGet<T>(path: string): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, { cache: "no-store" });
@@ -32,8 +33,8 @@ function mapProduct(item: ApiProduct): Product {
     priceValue: Number(item.price),
     rating: 0,
     reviewCount: 0,
-    image: "/images/double-a-uploaded.png",
-    gallery: ["/images/double-a-uploaded.png"],
+    image: DEFAULT_PRODUCT_IMAGE,
+    gallery: [DEFAULT_PRODUCT_IMAGE],
     stockStatus: item.stock <= 0 ? "unavailable" : item.stock < 10 ? "limited" : "available",
     inStock: item.stock > 0,
     description: item.description || "",
@@ -51,5 +52,6 @@ export async function getCategories(): Promise<Category[]> {
     id: item.id,
     title: item.name,
     subtitle: item.description || undefined,
+    image: DEFAULT_PRODUCT_IMAGE,
   }));
 }

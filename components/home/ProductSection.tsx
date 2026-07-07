@@ -19,7 +19,7 @@ export async function ProductSection() {
         </div>
         <div className="relative">
           <div className="grid grid-cols-2 gap-2.5 pb-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-            {apiProducts.map((product) => (
+            {apiProducts.slice(0, 8).map((product) => (
               <ProductCard product={product} key={product.id} />
             ))}
           </div>
