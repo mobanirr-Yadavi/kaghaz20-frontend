@@ -173,4 +173,74 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
  .admin-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:16px 20px;border-bottom:1px solid #edf0f5}.admin-form input,.admin-form select{min-width:0;height:42px;border:1px solid #dfe6f0;border-radius:9px;background:#fff;padding:0 12px;color:#001b55;font:inherit;font-size:12px;font-weight:700}.admin-form button{height:42px;border:0;border-radius:9px;background:#063bb9;color:#fff;font-size:12px;font-weight:900;cursor:pointer}.admin-form button[type="button"]{background:#eef3fb;color:#063b9b}@media(max-width:760px){.admin-form{grid-template-columns:1fr;padding:14px}}
 
 /* Page transition loading overlay */
-.page-transition-loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(248,250,253,.86);backdrop-filter:blur(10px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}.page-transition-loader.is-visible{opacity:1;visibility:visible;pointer-events:auto}.page-transition-loader__card{display:flex;min-width:190px;min-height:150px;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:26px 32px;border:1px solid rgba(230,170,53,.28);border-radius:26px;background:rgba(255,255,255,.92);box-shadow:0 24px 70px rgba(0,27,85,.18)}.page-transition-loader__logo{width:118px;height:auto;object-fit:contain;animation:loader-logo-spin 1.5s linear both}.page-transition-loader__card span{color:#001b55;font-size:13px;font-weight:900}@keyframes loader-logo-spin{from{transform:rotate(0deg) scale(.96);opacity:.75}50%{transform:rotate(180deg) scale(1.04);opacity:1}to{transform:rotate(360deg) scale(.96);opacity:.9}}@media(prefers-reduced-motion:reduce){.page-transition-loader,.page-transition-loader__logo{transition:none;animation:none}}
+/* Page transition loading overlay */
+.page-transition-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: rgba(248, 250, 253, 0.86);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .22s ease, visibility .22s ease;
+}
+
+.page-transition-loader.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.page-transition-loader__card {
+  display: flex;
+  min-width: 190px;
+  min-height: 150px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 26px 32px;
+  border: 1px solid rgba(230, 170, 53, .28);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 24px 70px rgba(0, 27, 85, .18);
+
+  /* برای چرخش سه‌بعدی */
+  perspective: 1000px;
+}
+
+.page-transition-loader__logo {
+  width: 118px;
+  height: auto;
+  object-fit: contain;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  animation: loader-logo-flip 1s ease-in-out infinite alternate;
+}
+
+.page-transition-loader__card span {
+  color: #001b55;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+@keyframes loader-logo-flip {
+  from {
+    transform: rotateY(0deg);
+  }
+
+  to {
+    transform: rotateY(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition-loader,
+  .page-transition-loader__logo {
+    transition: none;
+    animation: none;
+  }
+}
