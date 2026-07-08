@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { PageTransitionLoader } from "@/components/loading/PageTransitionLoader";
 import { CartProvider } from "@/components/cart/CartProvider";
 import "./globals.css";
 
@@ -17,7 +18,13 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body>
-        <CartProvider>{children}<Suspense fallback={null}><MobileBottomNav /></Suspense></CartProvider>
+        <CartProvider>
+          {children}
+          <PageTransitionLoader />
+          <Suspense fallback={null}>
+            <MobileBottomNav />
+          </Suspense>
+        </CartProvider>
       </body>
     </html>
   );
