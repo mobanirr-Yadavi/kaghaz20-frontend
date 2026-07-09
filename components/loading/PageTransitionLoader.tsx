@@ -8,7 +8,7 @@ const LOADER_DURATION = 1500;
 
 export function PageTransitionLoader() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstRender = useRef(true);
 
@@ -64,6 +64,7 @@ export function PageTransitionLoader() {
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
+      showLoader();
       return;
     }
 
@@ -73,14 +74,18 @@ export function PageTransitionLoader() {
   return (
     <div className={`page-transition-loader${isVisible ? " is-visible" : ""}`} aria-hidden={!isVisible} role="status">
       <div className="page-transition-loader__card">
-        <Image
-          alt="کاغذ ۲۰"
-          className="page-transition-loader__logo"
-          height={72}
-          priority
-          src="/images/logo-kaghaz20.png"
-          width={150}
-        />
+        <div className="page-transition-loader__mark" aria-hidden="true">
+          <span className="page-transition-loader__ring" />
+          <span className="page-transition-loader__ring page-transition-loader__ring--slow" />
+          <Image
+            alt="کاغذ ۲۰"
+            className="page-transition-loader__logo"
+            height={72}
+            priority
+            src="/images/logo-kaghaz20.png"
+            width={150}
+          />
+        </div>
         <span>در حال بارگذاری...</span>
       </div>
     </div>

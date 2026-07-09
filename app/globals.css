@@ -196,29 +196,88 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .page-transition-loader__card {
   display: flex;
-  min-width: 190px;
-  min-height: 150px;
+  min-width: 220px;
+  min-height: 190px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 26px 32px;
-  border: 1px solid rgba(230, 170, 53, .28);
-  border-radius: 26px;
-  background: rgba(255, 255, 255, .92);
+  gap: 18px;
+  padding: 28px 34px 26px;
+  border: 1px solid rgba(230, 170, 53, .32);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(230, 170, 53, .14), transparent 42%),
+    rgba(255, 255, 255, .94);
   box-shadow: 0 24px 70px rgba(0, 27, 85, .18);
 
-  /* برای چرخش سه‌بعدی */
-  perspective: 1000px;
 }
 
 .page-transition-loader__logo {
-  width: 118px;
+  position: relative;
+  z-index: 2;
+  width: 94px;
   height: auto;
   object-fit: contain;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
-  animation: loader-logo-flip 1s ease-in-out infinite alternate;
+  filter: drop-shadow(0 8px 12px rgba(0, 27, 85, .12));
+  animation: loader-logo-breathe 1.8s ease-in-out infinite;
+}
+
+.page-transition-loader__mark {
+  position: relative;
+  display: grid;
+  width: 132px;
+  height: 132px;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fff 0 48%, rgba(255, 255, 255, .72) 49% 58%, transparent 59%),
+    conic-gradient(from 145deg, rgba(230, 170, 53, .12), rgba(0, 59, 149, .16), rgba(230, 170, 53, .12));
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 27, 85, .06),
+    0 16px 34px rgba(0, 27, 85, .12);
+}
+
+.page-transition-loader__ring {
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #e6aa35;
+  border-right-color: rgba(0, 59, 149, .88);
+  animation: loader-orbit 1.05s cubic-bezier(.65, .05, .36, 1) infinite;
+}
+
+.page-transition-loader__ring::before,
+.page-transition-loader__ring::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px rgba(230, 170, 53, .16);
+}
+
+.page-transition-loader__ring::before {
+  top: 7px;
+  right: 10px;
+  background: #e6aa35;
+}
+
+.page-transition-loader__ring::after {
+  left: 8px;
+  bottom: 13px;
+  background: #003b95;
+  box-shadow: 0 0 0 5px rgba(0, 59, 149, .14);
+}
+
+.page-transition-loader__ring--slow {
+  inset: 18px;
+  border-top-color: rgba(0, 59, 149, .72);
+  border-right-color: transparent;
+  border-bottom-color: rgba(230, 170, 53, .72);
+  animation-duration: 1.65s;
+  animation-direction: reverse;
+  opacity: .72;
 }
 
 .page-transition-loader__card span {
@@ -227,19 +286,27 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   font-weight: 900;
 }
 
-@keyframes loader-logo-flip {
-  from {
-    transform: rotateY(0deg);
+@keyframes loader-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-logo-breathe {
+  0%,
+  100% {
+    transform: scale(.96);
   }
 
-  to {
-    transform: rotateY(180deg);
+  50% {
+    transform: scale(1.03);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .page-transition-loader,
-  .page-transition-loader__logo {
+  .page-transition-loader__logo,
+  .page-transition-loader__ring {
     transition: none;
     animation: none;
   }

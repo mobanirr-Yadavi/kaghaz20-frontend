@@ -19,8 +19,9 @@ export default function RootLayout({
     <html lang="fa" dir="rtl">
       <body>
         <CartProvider>
-          {children}
+          
           <PageTransitionLoader />
+          {children}
           <Suspense fallback={null}>
             <MobileBottomNav />
           </Suspense>
