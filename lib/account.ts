@@ -1,3 +1,5 @@
+import { getApiUrl } from "@/lib/env";
+
 export type Profile = { id: string; firstName: string; lastName: string; userName: string; email: string; phoneNumber: string; role: string };
 export type Order = { id: string; status: string; totalAmount: number; receiverFullName: string; createdAt: string; items: { productName: string }[] };
 export type AdminStats = { totalUsers: number; totalOrders: number; totalProducts: number; totalRevenue: number };
@@ -5,7 +7,7 @@ export type AdminUser = { id: string; firstName: string; lastName: string; userN
 export type AdminCategory = { id: string; name: string; description?: string | null };
 export type AdminProduct = { id: string; name: string; description?: string | null; price: number; stock: number; categoryId: string; categoryName?: string | null };
 
-const API_URL = (process.env.PAPER_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5016").replace(/\/$/, "");
+const API_URL = getApiUrl();
 
 export async function accountGet<T>(path: string, token: string): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });

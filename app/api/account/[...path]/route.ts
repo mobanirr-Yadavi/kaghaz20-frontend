@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { getApiUrl } from "@/lib/env";
 
-const API_URL = (process.env.PAPER_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5016").replace(/\/$/, "");
+const API_URL = getApiUrl();
 
 async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const token = (await cookies()).get("paper_token")?.value;

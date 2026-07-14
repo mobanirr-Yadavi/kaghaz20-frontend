@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getApiUrl } from "@/lib/env";
 
 const actions: Record<string, string> = { login: "Login", register: "Register", "send-otp": "SendOtp", "verify-otp": "VerifyOtp" };
 
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
   const { action } = await context.params;
   const backendAction = actions[action];
   if (!backendAction) return NextResponse.json({ message: "درخواست نامعتبر است." }, { status: 404 });
-  const apiUrl = (process.env.PAPER_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5016").replace(/\/$/, "");
+  const apiUrl = getApiUrl();
   try {
     const response = await fetch(`${apiUrl}/api/v1/Auth/${backendAction}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: await request.text(), cache: "no-store" });
     const text = await response.text();

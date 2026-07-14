@@ -1,11 +1,12 @@
 import type { Product } from "@/types/product";
 import type { Category } from "@/types/category";
+import { getApiUrl } from "@/lib/env";
 
 type ApiResponse<T> = { isSuccess: boolean; data: T; message?: string; errors?: string[] };
 type ApiProduct = { id: string; name: string; description?: string | null; price: number; stock: number; categoryId: string; categoryName?: string | null };
 type ApiCategory = { id: string; name: string; description?: string | null };
 
-const API_URL = (process.env.PAPER_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5016").replace(/\/$/, "");
+const API_URL = getApiUrl();
 const DEFAULT_PRODUCT_IMAGE = "/images/double-a-uploaded.png";
 
 async function apiGet<T>(path: string): Promise<T> {
