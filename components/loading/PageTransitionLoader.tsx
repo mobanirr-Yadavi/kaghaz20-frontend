@@ -4,7 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const LOADER_DURATION = 1500;
+const LOADER_DURATION = 600;
 
 export function PageTransitionLoader() {
   const pathname = usePathname();

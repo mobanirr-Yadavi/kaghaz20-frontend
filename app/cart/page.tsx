@@ -10,7 +10,7 @@ export default function CartPage() {
       <Header />
       <main className="py-3 sm:py-4">
         <Container>
-          <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-2xl bg-softBlue shadow-premium sm:mb-6 sm:aspect-auto sm:h-[150px]">
+          <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-2xl bg-softBlue shadow-premium sm:mb-6 sm:aspect-[1916/821]">
             <Image
               alt="سبد خرید"
               className="object-contain sm:hidden"

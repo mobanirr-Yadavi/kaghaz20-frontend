@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 type Method = "mobile" | "email";
 type OtpState = "idle" | "checking" | "valid" | "invalid";
@@ -25,6 +25,26 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const viewport = window.visualViewport;
+    const syncViewportHeight = () => {
+      root.style.setProperty("--auth-viewport-height", `${viewport?.height ?? window.innerHeight}px`);
+    };
+
+    root.classList.add("auth-active");
+    syncViewportHeight();
+    viewport?.addEventListener("resize", syncViewportHeight);
+    window.addEventListener("orientationchange", syncViewportHeight);
+
+    return () => {
+      viewport?.removeEventListener("resize", syncViewportHeight);
+      window.removeEventListener("orientationchange", syncViewportHeight);
+      root.classList.remove("auth-active");
+      root.style.removeProperty("--auth-viewport-height");
+    };
+  }, []);
 
   const run = async (job: () => Promise<unknown>) => { setLoading(true); setError(""); try { await job(); return true; } catch (reason) { setError(reason instanceof Error ? reason.message : "خطای پیش‌بینی‌نشده رخ داد."); return false; } finally { setLoading(false); } };
 
@@ -55,7 +75,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     <Link href="/"><Image className="mx-auto h-auto w-[120px]" src="/images/logo-kaghaz20.png" alt="کاغذ ۲۰" width={150} height={72} priority /></Link>
     <h1>{register ? "ساخت حساب کاربری" : "ورود به حساب کاربری"}</h1><p>{register ? "اطلاعات زیر را برای ایجاد حساب کامل کنید." : "برای ادامه خرید وارد حساب خود شوید."}</p>
     {!register && <div className="auth-methods" role="tablist" aria-label="روش ورود"><button aria-selected={method === "mobile"} className={method === "mobile" ? "active" : ""} onClick={() => { setMethod("mobile"); setMobileStep("phone"); setError(""); }} role="tab" type="button">ورود با موبایل</button><button aria-selected={method === "email"} className={method === "email" ? "active" : ""} onClick={() => { setMethod("email"); setError(""); }} role="tab" type="button">ورود با ایمیل</button></div>}
-    {success ? <div className="auth-success" role="status"><b>{register ? "ثبت‌نام با موفقیت انجام شد." : "ورود با موفقیت انجام شد."}</b><Link href="/cart">ادامه خرید</Link></div> : register ? <form className="auth-simple-form auth-register-form" onSubmit={submitMain} noValidate><label>نام<input name="firstName" autoComplete="given-name" /></label><label>نام خانوادگی<input name="lastName" autoComplete="family-name" /></label><label>نام کاربری<input name="userName" autoComplete="username" dir="ltr" /></label><label>ایمیل<input name="email" type="email" autoComplete="email" dir="ltr" /></label><label>شماره موبایل<input name="phoneNumber" type="tel" inputMode="numeric" autoComplete="tel" dir="ltr" placeholder="09123456789" /></label><PasswordField show={showPassword} setShow={setShowPassword} register />{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-main-action" disabled={loading}>{loading ? "در حال ثبت‌نام…" : "ثبت‌نام"}</button></form> : method === "email" ? <form className="auth-simple-form" onSubmit={submitMain} noValidate><label>ایمیل<input name="email" type="email" autoComplete="email" dir="ltr" placeholder="name@example.com" /></label><PasswordField show={showPassword} setShow={setShowPassword} />{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-main-action" disabled={loading}>{loading ? "در حال ورود…" : "ورود با ایمیل"}</button></form> : mobileStep === "phone" ? <form className="auth-simple-form" onSubmit={sendOtp} noValidate><label>شماره موبایل<input value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} type="tel" inputMode="numeric" autoComplete="tel" dir="ltr" placeholder="09123456789" /></label>{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-main-action" disabled={loading}>{loading ? "در حال ارسال…" : "ارسال پیامک یکبار مصرف"}</button></form> : <form className="auth-simple-form" onSubmit={verifyOtp}><p className="otp-hint">کد ارسال‌شده به <b dir="ltr">{phone}</b> را وارد کنید.</p><div className={`otp-boxes ${otpState}`} dir="ltr">{otp.map((digit, index) => <input key={index} ref={(element) => { otpRefs.current[index] = element; }} value={digit} onChange={(e) => updateOtp(index, e.target.value)} onKeyDown={(e) => otpKey(e, index)} inputMode="numeric" autoComplete={index === 0 ? "one-time-code" : "off"} aria-label={`رقم ${index + 1} کد`} />)}</div>{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-main-action" disabled={loading || otpState === "checking"}>{loading ? "در حال بررسی…" : "تأیید و ورود"}</button><button className="otp-back" type="button" onClick={() => { setMobileStep("phone"); setOtp(Array(6).fill("")); setOtpState("idle"); setError(""); }}>اصلاح شماره موبایل</button></form>}
+    {success ? <div className="auth-success" role="status"><b>{register ? "ثبت‌نام با موفقیت انجام شد." : "ورود با موفقیت انجام شد."}</b><Link href="/cart">ادامه خرید</Link></div> : register ? <form className="auth-simple-form auth-register-form" onSubmit={submitMain} noValidate><label>نام<input name="firstName" autoComplete="given-name" /></label><label>نام خانوادگی<input name="lastName" autoComplete="family-name" /></label><label>نام کاربری<input name="userName" autoComplete="username" dir="ltr" /></label><label>ایمیل<input name="email" type="email" inputMode="email" autoComplete="email" dir="ltr" /></label><label>شماره موبایل<input name="phoneNumber" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" placeholder="09123456789" /></label><PasswordField show={showPassword} setShow={setShowPassword} register />{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-main-action" disabled={loading}>{loading ? "در حال ثبت‌نام…" : "ثبت‌نام"}</button></form> : method === "email" ? <form className="auth-simple-form" onSubmit={submitMain} noValidate><label>ایمیل<input name="email" type="email" inputMode="email" autoComplete="email" dir="ltr" placeholder="name@example.com" /></label><PasswordField show={showPassword} setShow={setShowPassword} />{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-main-action" disabled={loading}>{loading ? "در حال ورود…" : "ورود با ایمیل"}</button></form> : mobileStep === "phone" ? <form className="auth-simple-form" onSubmit={sendOtp} noValidate><label>شماره موبایل<input value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} type="tel" inputMode="tel" autoComplete="tel" dir="ltr" placeholder="09123456789" /></label>{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-main-action" disabled={loading}>{loading ? "در حال ارسال…" : "ارسال پیامک یکبار مصرف"}</button></form> : <form className="auth-simple-form" onSubmit={verifyOtp}><p className="otp-hint">کد ارسال‌شده به <b dir="ltr">{phone}</b> را وارد کنید.</p><div className={`otp-boxes ${otpState}`} dir="ltr">{otp.map((digit, index) => <input key={index} ref={(element) => { otpRefs.current[index] = element; }} value={digit} onChange={(e) => updateOtp(index, e.target.value)} onKeyDown={(e) => otpKey(e, index)} type="text" inputMode="numeric" pattern="[0-9]*" maxLength={1} autoComplete={index === 0 ? "one-time-code" : "off"} aria-label={`رقم ${index + 1} کد`} />)}</div>{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-main-action" disabled={loading || otpState === "checking"}>{loading ? "در حال بررسی…" : "تأیید و ورود"}</button><button className="otp-back" type="button" onClick={() => { setMobileStep("phone"); setOtp(Array(6).fill("")); setOtpState("idle"); setError(""); }}>اصلاح شماره موبایل</button></form>}
     <div className="auth-switch-simple">{register ? "قبلاً حساب ساخته‌اید؟" : "حساب کاربری ندارید؟"} <Link href={register ? "/login" : "/register"}>{register ? "وارد شوید" : "ثبت‌نام کنید"}</Link></div><Link className="auth-back" href="/shop">بازگشت به فروشگاه</Link>
   </section></main>;
 }

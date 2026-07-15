@@ -8,10 +8,10 @@ import { NavigationBar } from "@/components/layout/NavigationBar";
 
 export function Header() {
   return (
-    <header className="bg-white">
+    <header className="sticky top-0 z-50 border-b border-borderBlue/70 bg-white/90 shadow-[0_6px_24px_rgba(0,27,85,0.05)] backdrop-blur-xl">
       <Container>
-        <div className="flex h-[68px] items-center gap-3 sm:gap-4 lg:h-[76px]">
-          <Link className="shrink-0" href="/" aria-label="کاغذ ۲۰">
+        <div className="flex h-[68px] items-center gap-3 sm:gap-4 lg:h-[78px]">
+          <Link className="shrink-0 transition duration-300 hover:scale-[1.03]" href="/" aria-label="کاغذ ۲۰">
             <Image alt="کاغذ ۲۰" className="h-auto w-[92px] sm:w-[112px] xl:w-[124px]" height={72} priority src="/images/logo-kaghaz20.png" width={150} />
           </Link>
           <NavigationBar />
@@ -20,7 +20,7 @@ export function Header() {
           </div>
           <div className="hidden shrink-0 items-center gap-2 text-navy sm:flex xl:gap-3">
             <CartLink />
-            <Link className="grid size-9 place-items-center rounded-full transition hover:bg-softBlue" href="/account" aria-label="حساب کاربری"><UserIcon className="size-6" /></Link>
+            <Link className="grid size-10 place-items-center rounded-full border border-transparent transition duration-300 hover:-translate-y-0.5 hover:border-borderBlue hover:bg-softBlue hover:shadow-soft" href="/account" aria-label="حساب کاربری"><UserIcon className="size-6" /></Link>
           </div>
         </div>
       </Container>

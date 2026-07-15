@@ -20,9 +20,9 @@ function FooterList({ title, items }: { title: string; items: { label: string; h
 
 export function Footer() {
   return (
-    <footer className="mt-2 bg-[linear-gradient(90deg,#001247,#001B55)] py-6 text-white">
+    <footer className="relative mt-8 overflow-hidden border-t-4 border-buttonGold/80 bg-[radial-gradient(circle_at_15%_10%,rgba(7,88,190,.32),transparent_28%),linear-gradient(110deg,#00103d,#001B55_55%,#00276c)] py-9 text-white shadow-[0_-12px_36px_rgba(0,27,85,.08)] sm:py-11">
       <Container>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-[1.35fr_.7fr_.8fr_1fr_1fr] lg:gap-10">
+        <div className="grid gap-9 md:grid-cols-2 lg:grid-cols-[1.35fr_.7fr_.8fr_1fr_1fr] lg:gap-10">
           <div>
             <h3 className="mb-4 text-sm font-black">نمادها و مجوزها</h3>
             <div className="max-w-[430px]">

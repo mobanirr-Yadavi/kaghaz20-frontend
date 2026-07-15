@@ -5,7 +5,6 @@ import { useCart } from "@/components/cart/CartProvider";
 import { CartSummary } from "@/components/cart/CartSummary";
 import { CartTable } from "@/components/cart/CartTable";
 import { DiscountCode } from "@/components/cart/DiscountCode";
-import { TrustBadges } from "@/components/cart/TrustBadges";
 
 export function CartPageClient() {
   const { items, hydrated, updateQuantity, removeItem } = useCart();
@@ -28,7 +27,6 @@ export function CartPageClient() {
           <p className="font-black text-buttonGold">خریدی امن و مطمئن</p>
           <p className="mt-2 text-xs font-semibold text-muted">اطلاعات شما در محیطی امن پردازش می‌شود.</p>
         </div>
-        <TrustBadges />
       </div>
       <div className="order-1 space-y-5 lg:order-2">
         <CartTable

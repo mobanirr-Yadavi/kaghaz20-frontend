@@ -23,6 +23,8 @@ const items = [
 export function MobileBottomNav() {
   const pathname = usePathname();
 
+  if (pathname === "/login" || pathname === "/register") return null;
+
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-borderBlue bg-white/95 px-3 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 shadow-[0_-8px_24px_rgba(0,27,85,0.08)] backdrop-blur lg:hidden" aria-label="ناوبری موبایل">
       <div className="mx-auto grid max-w-md grid-cols-4 gap-1 sm:gap-2">
