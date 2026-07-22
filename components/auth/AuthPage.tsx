@@ -57,17 +57,17 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
       if (!/^\S+@\S+\.\S+$/.test(data.email)) return setError("فرمت ایمیل صحیح نیست.");
       if (!/^09\d{9}$/.test(data.phoneNumber)) return setError("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
       if (data.password.length < 6) return setError("رمز عبور باید حداقل ۶ کاراکتر باشد.");
-      if (await run(() => request("/api/auth/register", data))) window.location.assign("/account");
+      if (await run(() => request("/api/v1/auth/register", data))) window.location.assign("/account");
       return;
     }
     const email = data.email?.trim(); const password = data.password || "";
     if (!/^\S+@\S+\.\S+$/.test(email)) return setError("یک ایمیل معتبر وارد کنید.");
     if (password.length < 6) return setError("رمز عبور باید حداقل ۶ کاراکتر باشد.");
-    if (await run(() => request("/api/auth/login", { email, password }))) window.location.assign("/account");
+    if (await run(() => request("/api/v1/auth/login", { email, password }))) window.location.assign("/account");
   };
 
-  const sendOtp = async (event: FormEvent) => { event.preventDefault(); if (!/^09\d{9}$/.test(phone)) return setError("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید."); if (await run(() => request("/api/auth/send-otp", { mobileNo: phone }))) { setMobileStep("otp"); setTimeout(() => otpRefs.current[0]?.focus(), 50); } };
-  const verifyOtp = async (event: FormEvent) => { event.preventDefault(); const code = otp.join(""); if (code.length !== 6) return setError("کد ۶ رقمی را کامل وارد کنید."); setOtpState("checking"); const ok = await run(() => request("/api/auth/verify-otp", { mobile: phone, code })); setOtpState(ok ? "valid" : "invalid"); if (ok) setTimeout(() => window.location.assign("/account"), 350); };
+  const sendOtp = async (event: FormEvent) => { event.preventDefault(); if (!/^09\d{9}$/.test(phone)) return setError("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید."); if (await run(() => request("/api/v1/auth/send-otp", { mobileNo: phone }))) { setMobileStep("otp"); setTimeout(() => otpRefs.current[0]?.focus(), 50); } };
+  const verifyOtp = async (event: FormEvent) => { event.preventDefault(); const code = otp.join(""); if (code.length !== 6) return setError("کد ۶ رقمی را کامل وارد کنید."); setOtpState("checking"); const ok = await run(() => request("/api/v1/auth/verify-otp", { mobile: phone, code })); setOtpState(ok ? "valid" : "invalid"); if (ok) setTimeout(() => window.location.assign("/account"), 350); };
   const updateOtp = (index: number, value: string) => { const digit = value.replace(/\D/g, "").slice(-1); setOtpState("idle"); setOtp((current) => current.map((item, position) => position === index ? digit : item)); if (digit) otpRefs.current[index + 1]?.focus(); };
   const otpKey = (event: KeyboardEvent<HTMLInputElement>, index: number) => { if (event.key === "Backspace" && !otp[index]) otpRefs.current[index - 1]?.focus(); };
 

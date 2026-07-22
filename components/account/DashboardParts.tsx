@@ -50,7 +50,7 @@ export function DashboardSidebar({ profile, admin = false }: { profile: Profile;
           </Link>
         ))}
       </nav>
-      <form action="/api/auth/logout" method="post">
+      <form action="/api/v1/auth/logout" method="post">
         <button type="submit">↪ خروج از حساب</button>
       </form>
     </aside>

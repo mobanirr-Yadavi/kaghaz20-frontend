@@ -11,7 +11,7 @@ type ApiResponse<T> = { isSuccess: boolean; data: T; message?: string };
 const emptyCategory: CategoryForm = { name: "", description: "" };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api/account${path}`, {
+  const response = await fetch(`/api/v1${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
   });

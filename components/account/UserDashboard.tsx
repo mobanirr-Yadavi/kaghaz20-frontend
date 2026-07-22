@@ -23,7 +23,7 @@ export function UserDashboard({ profile, orders }: { profile: Profile; orders: O
   async function submitProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
-    const response = await fetch("/api/account/Profile/UpdateProfile", {
+    const response = await fetch("/api/v1/Profile/UpdateProfile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
