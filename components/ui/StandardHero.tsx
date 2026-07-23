@@ -12,11 +12,11 @@ type StandardHeroProps = {
 };
 
 const mobileHeroByDesktopSrc: Record<string, string> = {
-  "/images/home-hero-premium.png": "/MobileBanners/01-home-premium-mobile.webp",
-  "/images/pages/store-hero.png": "/MobileBanners/02-shop-warehouse-mobile.webp",
-  "/images/pages/about-hero.png": "/MobileBanners/03-about-mobile.webp",
-  "/images/pages/contact-hero.png": "/MobileBanners/04-contact-mobile.webp",
-  "/images/pages/blog-hero.png": "/MobileBanners/06-blog-mobile.webp",
+  "/images/home-hero-premium.webp": "/MobileBanners/01-home-premium-mobile.webp",
+  "/images/pages/store-hero.webp": "/MobileBanners/02-shop-warehouse-mobile.webp",
+  "/images/pages/about-hero.webp": "/MobileBanners/03-about-mobile.webp",
+  "/images/pages/contact-hero.webp": "/MobileBanners/04-contact-mobile.webp",
+  "/images/pages/blog-hero.webp": "/MobileBanners/06-blog-mobile.webp",
 };
 
 export function StandardHero({

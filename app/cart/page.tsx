@@ -25,7 +25,7 @@ export default function CartPage() {
               fill
               priority
               sizes="(max-width: 1536px) 100vw, 1440px"
-              src="/images/pages/cart-hero.png"
+              src="/images/pages/cart-hero.webp"
             />
           </div>
           <CartPageClient />

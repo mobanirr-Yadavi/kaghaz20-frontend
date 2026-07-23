@@ -6,7 +6,7 @@ export function BlogHero() {
     <section className="pt-3">
       <Container>
         <StandardHero
-          src="/images/pages/blog-hero.png"
+          src="/images/pages/blog-hero.webp"
           alt="مجله کاغذ ۲۰"
           mobileAspectClassName="aspect-[941/1672]"
         />
