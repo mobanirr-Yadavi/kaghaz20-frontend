@@ -45,7 +45,6 @@ export function Footer() {
               src="https://trustseal.enamad.ir/logo.aspx?id=772087&Code=StpDXVmDaWBSZL5tmf0k2pFuDcsgJFsV"
               alt="نماد اعتماد الکترونیکی"
               className="h-auto max-h-[85px] w-auto cursor-pointer object-contain"
-              code="StpDXVmDaWBSZL5tmf0k2pFuDcsgJFsV"
             />
           </a>
         </div>
