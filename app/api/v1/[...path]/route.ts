@@ -34,7 +34,7 @@ async function proxy(
 
   // Logout is a frontend-only operation because the backend uses stateless JWTs.
   if (request.method === "POST" && normalizedPath.toLowerCase() === "auth/logout") {
-    const response = NextResponse.redirect(new URL("/login", request.url), 303);
+    const response = new NextResponse(null, { status: 204 });
     clearAuthCookies(response);
     return response;
   }
@@ -78,7 +78,8 @@ async function proxy(
     const isTokenAction =
       lowerPath === "auth/login" ||
       lowerPath === "auth/register" ||
-      lowerPath === "auth/verifyotp";
+      lowerPath === "auth/verifyotp" ||
+      lowerPath === "auth/completeregistration";
 
     if (upstreamResponse.ok && isTokenAction) {
       try {
@@ -86,7 +87,7 @@ async function proxy(
         const issuedToken =
           typeof payload?.data === "string"
             ? payload.data
-            : payload?.data?.token;
+            : payload?.data?.token || payload?.data?.accessToken;
 
         if (typeof issuedToken === "string" && issuedToken.length > 0) {
           const cookieOptions = {

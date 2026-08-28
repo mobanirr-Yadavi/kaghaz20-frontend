@@ -9,6 +9,15 @@ type CategoryForm = { name: string; description: string };
 type ApiResponse<T> = { isSuccess: boolean; data: T; message?: string };
 
 const emptyCategory: CategoryForm = { name: "", description: "" };
+export type AdminView = "overview" | "orders" | "products" | "categories" | "customers";
+
+const viewTitles: Record<AdminView, { title: string; description: string }> = {
+  overview: { title: "داشبورد مدیریت", description: "نمای کلی وضعیت فروشگاه کاغذ ۲۰" },
+  orders: { title: "مدیریت سفارش‌ها", description: "مشاهده همه سفارش‌های ثبت‌شده" },
+  products: { title: "مدیریت محصولات", description: "افزودن، ویرایش و کنترل موجودی محصولات" },
+  categories: { title: "مدیریت دسته‌بندی‌ها", description: "ساخت و ویرایش دسته‌بندی محصولات" },
+  customers: { title: "مشتریان", description: "مشاهده و مدیریت تمام مشتریان فروشگاه" },
+};
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api/v1${path}`, {
@@ -27,6 +36,7 @@ export function AdminDashboard({
   users,
   products,
   categories,
+  view = "overview",
 }: {
   profile: Profile;
   stats: AdminStats;
@@ -34,6 +44,7 @@ export function AdminDashboard({
   users: AdminUser[];
   products: AdminProduct[];
   categories: AdminCategory[];
+  view?: AdminView;
 }) {
   const [productRows, setProductRows] = useState(products);
   const [categoryRows, setCategoryRows] = useState(categories);
@@ -47,6 +58,10 @@ export function AdminDashboard({
   const [categoryForm, setCategoryForm] = useState<CategoryForm>(emptyCategory);
 
   const customers = userRows.filter((user) => user.role.toLowerCase() !== "admin");
+  const recentCustomers = [...customers].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const recentOrders = [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const visibleCustomers = view === "overview" ? recentCustomers.slice(0, 5) : recentCustomers;
+  const visibleOrders = view === "overview" ? recentOrders.slice(0, 5) : recentOrders;
 
   async function submitProduct(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -143,21 +158,21 @@ export function AdminDashboard({
       <DashboardSidebar profile={profile} admin />
       <section className="dash-content">
         <header className="dash-welcome admin-head">
-          <div><h1>خوش آمدید، مدیر سیستم</h1><p>مدیریت محصولات، دسته‌بندی‌ها و مشتریان</p></div>
+          <div><h1>{viewTitles[view].title}</h1><p>{viewTitles[view].description}</p></div>
           <a href="/">مشاهده سایت</a>
         </header>
 
         {message ? <div className="dash-empty">{message}</div> : null}
 
-        <div id="admin-stats" className="metric-grid admin-metrics">
+        <div id="admin-stats" className={`metric-grid admin-metrics ${view !== "overview" ? "is-hidden" : ""}`}>
           <article><i>◇</i><span>تعداد محصولات<b>{money(productRows.length || stats.totalProducts)}</b><small>محصول</small></span></article>
           <article><i>□</i><span>تعداد سفارش‌ها<b>{money(stats.totalOrders)}</b><small>سفارش</small></span></article>
           <article><i>♙</i><span>تعداد مشتریان<b>{money(customers.length || stats.totalUsers)}</b><small>مشتری</small></span></article>
           <article><i>◎</i><span>کل فروش<b>{money(stats.totalRevenue)}</b><small>تومان</small></span></article>
         </div>
 
-        <div className="admin-grid">
-          <section id="admin-products" className="dash-card admin-orders">
+        <div className={`admin-grid ${view !== "overview" ? "admin-single-view" : ""}`}>
+          <section id="admin-products" className={`dash-card admin-orders ${view !== "products" ? "is-hidden" : ""}`}>
             <div className="card-title"><h2>محصولات</h2><span>{editingProductId ? "ویرایش محصول" : "محصول جدید"}</span></div>
             <form className="admin-form" onSubmit={submitProduct}>
               <input required placeholder="نام محصول" value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} />
@@ -183,7 +198,7 @@ export function AdminDashboard({
             ) : <EmptyRows text="محصولی وجود ندارد." />}
           </section>
 
-          <section id="admin-categories" className="dash-card new-users">
+          <section id="admin-categories" className={`dash-card new-users ${view !== "categories" ? "is-hidden" : ""}`}>
             <div className="card-title"><h2>دسته‌بندی‌ها</h2><span>{editingCategoryId ? "ویرایش دسته‌بندی" : "دسته‌بندی جدید"}</span></div>
             <form className="admin-form" onSubmit={submitCategory}>
               <input required placeholder="نام دسته‌بندی" value={categoryForm.name} onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })} />
@@ -203,11 +218,11 @@ export function AdminDashboard({
             ) : <EmptyRows text="دسته‌بندی وجود ندارد." />}
           </section>
 
-          <section id="admin-users" className="dash-card admin-orders">
-            <div className="card-title"><h2>مشتریان و مدیریت کاربران</h2></div>
-            {customers.length ? (
+          <section id="admin-users" className={`dash-card admin-orders ${!["overview", "customers"].includes(view) ? "is-hidden" : ""}`}>
+            <div className="card-title"><h2>{view === "overview" ? "۵ مشتری جدید" : "همه مشتریان"}</h2>{view === "overview" ? <a href="/account/customers">مشاهده همه</a> : <span>{money(customers.length)} مشتری</span>}</div>
+            {visibleCustomers.length ? (
               <div className="table-wrap"><table><thead><tr><th>نام</th><th>نام کاربری</th><th>ایمیل</th><th>موبایل</th><th>عضویت</th><th>عملیات</th></tr></thead><tbody>
-                {customers.map((user) => (
+                {visibleCustomers.map((user) => (
                   <tr key={user.id}>
                     <td>{user.firstName} {user.lastName}</td><td>{user.userName}</td><td>{user.email}</td><td>{user.phoneNumber}</td><td>{date(user.createdAt)}</td>
                     <td><button type="button" onClick={() => deleteUser(user.id)}>حذف</button></td>
@@ -217,11 +232,11 @@ export function AdminDashboard({
             ) : <EmptyRows text="مشتری وجود ندارد." />}
           </section>
 
-          <section id="admin-orders" className="dash-card new-users">
-            <div className="card-title"><h2>سفارش‌های اخیر</h2></div>
-            {orders.length ? (
+          <section id="admin-orders" className={`dash-card new-users ${!["overview", "orders"].includes(view) ? "is-hidden" : ""}`}>
+            <div className="card-title"><h2>{view === "overview" ? "۵ سفارش اخیر" : "همه سفارش‌ها"}</h2>{view === "overview" ? <a href="/account/orders">مشاهده همه</a> : <span>{money(orders.length)} سفارش</span>}</div>
+            {visibleOrders.length ? (
               <div className="table-wrap"><table><thead><tr><th>سفارش</th><th>مشتری</th><th>مبلغ</th><th>وضعیت</th></tr></thead><tbody>
-                {orders.slice(0, 5).map((order) => <tr key={order.id}><td>#{order.id.slice(0, 7)}</td><td>{order.receiverFullName}</td><td>{money(order.totalAmount)}</td><td>{order.status}</td></tr>)}
+                {visibleOrders.map((order) => <tr key={order.id}><td>#{order.id.slice(0, 7)}</td><td>{order.receiverFullName}</td><td>{money(order.totalAmount)}</td><td>{order.status}</td></tr>)}
               </tbody></table></div>
             ) : <EmptyRows text="سفارشی وجود ندارد." />}
           </section>

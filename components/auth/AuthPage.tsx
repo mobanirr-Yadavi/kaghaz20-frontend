@@ -44,8 +44,9 @@ export function AuthPage({
   const register = mode === "register";
 
   const [method, setMethod] = useState<Method>("mobile");
-  const [mobileStep, setMobileStep] = useState<"phone" | "otp">("phone");
+  const [mobileStep, setMobileStep] = useState<"phone" | "otp" | "profile">("phone");
   const [phone, setPhone] = useState("");
+  const [registrationToken, setRegistrationToken] = useState("");
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const [otpState, setOtpState] = useState<OtpState>("idle");
   const [showPassword, setShowPassword] = useState(false);
@@ -224,20 +225,65 @@ export function AuthPage({
     }
 
     setOtpState("checking");
+    setLoading(true);
+    setError("");
 
-    const verified = await run(() =>
-      request("/api/v1/Auth/VerifyOtp", {
+    try {
+      const payload = await request("/api/v1/Auth/VerifyOtp", {
         mobile: phone,
         code,
-      }),
-    );
+      });
+      const data = payload?.data;
 
-    setOtpState(verified ? "valid" : "invalid");
+      setOtpState("valid");
 
-    if (verified) {
+      if (typeof data?.registrationToken === "string" && !data?.accessToken) {
+        setRegistrationToken(data.registrationToken);
+        setMobileStep("profile");
+        setOtpState("idle");
+        return;
+      }
+
       setTimeout(() => {
         window.location.assign("/account");
       }, 350);
+    } catch (reason) {
+      setOtpState("invalid");
+      setError(
+        reason instanceof Error
+          ? reason.message
+          : "کد واردشده معتبر نیست.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const completeMobileRegistration = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const firstName = String(form.get("firstName") || "").trim();
+    const lastName = String(form.get("lastName") || "").trim();
+    const email = String(form.get("email") || "").trim();
+
+    if (!firstName || !lastName) {
+      setError("نام و نام خانوادگی را کامل وارد کنید.");
+      return;
+    }
+
+    const completed = await run(() =>
+      request("/api/v1/Auth/CompleteRegistration", {
+        registrationToken,
+        firstName,
+        lastName,
+        email,
+      }),
+    );
+
+    if (completed) {
+      window.location.assign("/account");
     }
   };
 
@@ -473,7 +519,7 @@ export function AuthPage({
                 : "ارسال پیامک یکبار مصرف"}
             </button>
           </form>
-        ) : (
+        ) : mobileStep === "otp" ? (
           <form
             className="auth-simple-form"
             onSubmit={verifyOtp}
@@ -534,6 +580,51 @@ export function AuthPage({
               }}
             >
               اصلاح شماره موبایل
+            </button>
+          </form>
+        ) : (
+          <form
+            className="auth-simple-form"
+            onSubmit={completeMobileRegistration}
+            noValidate
+          >
+            <p className="otp-hint">
+              شماره شما تأیید شد. برای تکمیل ثبت‌نام، مشخصاتتان را وارد کنید.
+            </p>
+
+            <label>
+              نام
+              <input name="firstName" autoComplete="given-name" required />
+            </label>
+
+            <label>
+              نام خانوادگی
+              <input name="lastName" autoComplete="family-name" required />
+            </label>
+
+            <label>
+              ایمیل (اختیاری)
+              <input
+                name="email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                dir="ltr"
+              />
+            </label>
+
+            {error && (
+              <p className="auth-error" role="alert">
+                {error}
+              </p>
+            )}
+
+            <button
+              className="auth-main-action"
+              disabled={loading || !registrationToken}
+              type="submit"
+            >
+              {loading ? "در حال ثبت اطلاعات…" : "تکمیل ثبت‌نام و ورود"}
             </button>
           </form>
         )}
