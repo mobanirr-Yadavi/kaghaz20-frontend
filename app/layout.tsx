@@ -8,6 +8,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "کاغذ ۲۰ | مرکز تخصصی فروش کاغذ",
   description: "مرکز تخصصی فروش کاغذ Double A با ضمانت اصالت کالا",
+  icons: {
+    icon: "/images/logo-kaghaz20.png",
+    shortcut: "/images/logo-kaghaz20.png",
+    apple: "/images/logo-kaghaz20.png",
+  },
 };
 
 export const viewport: Viewport = {

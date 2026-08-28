@@ -25,6 +25,7 @@ export function CartPageClient() {
   const [checkout, setCheckout] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
+  const [shippingMethod, setShippingMethod] = useState("snapp");
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);
 
   const submitOrder = async (event: FormEvent<HTMLFormElement>) => {
@@ -32,7 +33,13 @@ export function CartPageClient() {
     const form = new FormData(event.currentTarget);
     const receiverFullName = String(form.get("receiverFullName") || "").trim();
     const receiverPhoneNumber = String(form.get("receiverPhoneNumber") || "").trim();
-    const shippingAddress = String(form.get("shippingAddress") || "").trim();
+    const address = String(form.get("shippingAddress") || "").trim();
+    const shippingLabels: Record<string, string> = {
+      snapp: "اسنپ (ویژه تهران - ارسال تا یک ساعت)",
+      post: "اداره پست",
+      tipax: "تیپاکس",
+    };
+    const shippingAddress = `[نحوه ارسال: ${shippingLabels[shippingMethod]}]\n${address}`;
     if (!/^09\d{9}$/.test(receiverPhoneNumber)) {
       setError("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
       return;
@@ -79,7 +86,7 @@ export function CartPageClient() {
       </div>
       <div className="order-1 space-y-5 lg:order-2">
         <CartTable items={items} updateQuantity={updateQuantity} removeItem={removeItem} />
-        {checkout && <form id="checkout-form" className="rounded-2xl bg-white p-5 shadow-card sm:p-7" onSubmit={submitOrder}><h2 className="text-xl font-black text-navy">اطلاعات دریافت سفارش</h2><p className="mt-1 text-xs font-semibold text-muted">پس از ثبت سفارش به درگاه امن بانک ملت منتقل می‌شوید.</p><div className="mt-5 grid gap-4 sm:grid-cols-2"><label className="text-sm font-black">نام و نام خانوادگی<input name="receiverFullName" required autoComplete="name" className="mt-2 h-12 w-full rounded-lg border border-borderBlue px-3 outline-none focus:border-royal" /></label><label className="text-sm font-black">شماره موبایل<input name="receiverPhoneNumber" required inputMode="numeric" autoComplete="tel" dir="ltr" placeholder="09123456789" className="mt-2 h-12 w-full rounded-lg border border-borderBlue px-3 outline-none focus:border-royal" /></label><label className="text-sm font-black sm:col-span-2">آدرس<textarea name="shippingAddress" required autoComplete="street-address" className="mt-2 min-h-24 w-full rounded-lg border border-borderBlue p-3 outline-none focus:border-royal" /></label></div>{error && <p className="mt-4 rounded-lg bg-red-50 p-3 text-center text-sm font-bold text-red-700" role="alert">{error}</p>}<button disabled={processing} className="mt-4 h-12 w-full rounded-xl bg-navy font-black text-white disabled:opacity-60" type="submit">{processing ? "در حال اتصال به درگاه…" : "ثبت سفارش و پرداخت آنلاین"}</button></form>}
+        {checkout && <form id="checkout-form" className="rounded-2xl bg-white p-5 shadow-card sm:p-7" onSubmit={submitOrder}><h2 className="text-xl font-black text-navy">اطلاعات دریافت سفارش</h2><p className="mt-1 text-xs font-semibold text-muted">پس از ثبت سفارش به درگاه امن بانک ملت منتقل می‌شوید.</p><fieldset className="mt-5"><legend className="mb-3 text-sm font-black text-navy">نحوه ارسال</legend><div className="grid gap-3 sm:grid-cols-3">{[{ value: "snapp", title: "اسنپ", note: "ویژه تهران؛ ارسال تا یک ساعت", logo: "https://www.google.com/s2/favicons?domain=snapp.ir&sz=128" }, { value: "post", title: "اداره پست", note: "ارسال سراسری", logo: "https://www.google.com/s2/favicons?domain=post.ir&sz=128" }, { value: "tipax", title: "تیپاکس", note: "ارسال سریع بین‌شهری", logo: "https://www.google.com/s2/favicons?domain=tipaxco.com&sz=128" }].map((method) => <label key={method.value} className={`cursor-pointer rounded-xl border p-3 transition ${shippingMethod === method.value ? "border-royal bg-softBlue ring-2 ring-royal/10" : "border-borderBlue"}`}><span className="flex items-center gap-2"><input type="radio" name="shippingMethod" value={method.value} checked={shippingMethod === method.value} onChange={(event) => setShippingMethod(event.target.value)} /><span className="grid size-10 place-items-center rounded-lg bg-white p-1 shadow-sm"><img className="max-h-full max-w-full object-contain" src={method.logo} alt={`لوگوی ${method.title}`} width="36" height="36" loading="lazy" referrerPolicy="no-referrer" /></span><b className="text-sm text-navy">{method.title}</b></span><small className="mt-2 block text-[11px] font-semibold text-muted">{method.note}</small></label>)}</div></fieldset><div className="mt-5 grid gap-4 sm:grid-cols-2"><label className="text-sm font-black">نام گیرنده<input name="receiverFullName" required autoComplete="name" className="mt-2 h-12 w-full rounded-lg border border-borderBlue px-3 outline-none focus:border-royal" /></label><label className="text-sm font-black">شماره موبایل<input name="receiverPhoneNumber" required inputMode="numeric" autoComplete="tel" dir="ltr" placeholder="09123456789" className="mt-2 h-12 w-full rounded-lg border border-borderBlue px-3 outline-none focus:border-royal" /></label><label className="text-sm font-black sm:col-span-2">آدرس<textarea name="shippingAddress" required autoComplete="street-address" className="mt-2 min-h-24 w-full rounded-lg border border-borderBlue p-3 outline-none focus:border-royal" /></label></div>{error && <p className="mt-4 rounded-lg bg-red-50 p-3 text-center text-sm font-bold text-red-700" role="alert">{error}</p>}<button disabled={processing} className="mt-4 h-12 w-full rounded-xl bg-navy font-black text-white disabled:opacity-60" type="submit">{processing ? "در حال اتصال به درگاه…" : "ثبت سفارش و پرداخت آنلاین"}</button></form>}
       </div>
     </div>
   );

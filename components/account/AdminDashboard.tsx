@@ -60,8 +60,9 @@ export function AdminDashboard({
   const customers = userRows.filter((user) => user.role.toLowerCase() !== "admin");
   const recentCustomers = [...customers].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const recentOrders = [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const paidOrders = recentOrders.filter((order) => order.status.toLowerCase() === "paid");
   const visibleCustomers = view === "overview" ? recentCustomers.slice(0, 5) : recentCustomers;
-  const visibleOrders = view === "overview" ? recentOrders.slice(0, 5) : recentOrders;
+  const visibleOrders = view === "overview" ? paidOrders.slice(0, 5) : recentOrders;
 
   async function submitProduct(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -233,12 +234,12 @@ export function AdminDashboard({
           </section>
 
           <section id="admin-orders" className={`dash-card new-users ${!["overview", "orders"].includes(view) ? "is-hidden" : ""}`}>
-            <div className="card-title"><h2>{view === "overview" ? "۵ سفارش اخیر" : "همه سفارش‌ها"}</h2>{view === "overview" ? <a href="/account/orders">مشاهده همه</a> : <span>{money(orders.length)} سفارش</span>}</div>
+            <div className="card-title"><h2>{view === "overview" ? "۵ سفارش پرداخت‌شده اخیر" : "همه سفارش‌ها"}</h2>{view === "overview" ? <a href="/account/orders">مشاهده همه</a> : <span>{money(orders.length)} سفارش</span>}</div>
             {visibleOrders.length ? (
               <div className="table-wrap"><table><thead><tr><th>سفارش</th><th>مشتری</th><th>مبلغ</th><th>وضعیت</th></tr></thead><tbody>
                 {visibleOrders.map((order) => <tr key={order.id}><td>#{order.id.slice(0, 7)}</td><td>{order.receiverFullName}</td><td>{money(order.totalAmount)}</td><td>{order.status}</td></tr>)}
               </tbody></table></div>
-            ) : <EmptyRows text="سفارشی وجود ندارد." />}
+            ) : <EmptyRows text={view === "overview" ? "هنوز سفارش پرداخت‌شده‌ای وجود ندارد." : "سفارشی وجود ندارد."} />}
           </section>
         </div>
       </section>
