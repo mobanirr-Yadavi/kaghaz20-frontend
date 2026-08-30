@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, Fragment, useMemo, useState } from "react";
 import type { AdminCategory, AdminProduct, AdminStats, AdminUser, Order, Profile } from "@/lib/account";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
 
@@ -10,6 +10,15 @@ type ApiResponse<T> = { isSuccess: boolean; data: T; message?: string };
 
 const emptyCategory: CategoryForm = { name: "", description: "" };
 export type AdminView = "overview" | "orders" | "products" | "categories" | "customers";
+
+const orderStatusLabels: Record<string, string> = {
+  Paid: "پرداخت‌شده",
+  Pending: "در انتظار پرداخت",
+  Processing: "در حال پردازش",
+  Shipped: "ارسال‌شده",
+  Delivered: "تحویل‌شده",
+  Cancelled: "لغوشده",
+};
 
 const viewTitles: Record<AdminView, { title: string; description: string }> = {
   overview: { title: "داشبورد مدیریت", description: "نمای کلی وضعیت فروشگاه کاغذ ۲۰" },
@@ -52,6 +61,10 @@ export function AdminDashboard({
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
+  const [orderStatusFilter, setOrderStatusFilter] = useState("all");
+  const [orderFromDate, setOrderFromDate] = useState("");
+  const [orderToDate, setOrderToDate] = useState("");
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const firstCategoryId = categoryRows[0]?.id || "";
   const emptyProduct = useMemo<ProductForm>(() => ({ name: "", description: "", price: "", stock: "", categoryId: firstCategoryId }), [firstCategoryId]);
   const [productForm, setProductForm] = useState<ProductForm>({ name: "", description: "", price: "", stock: "", categoryId: firstCategoryId });
@@ -61,8 +74,15 @@ export function AdminDashboard({
   const recentCustomers = [...customers].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const recentOrders = [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const paidOrders = recentOrders.filter((order) => order.status.toLowerCase() === "paid");
+  const filteredOrders = recentOrders.filter((order) => {
+    const statusMatches = orderStatusFilter === "all" || order.status.toLowerCase() === orderStatusFilter.toLowerCase();
+    const createdAt = new Date(order.createdAt).getTime();
+    const fromMatches = !orderFromDate || createdAt >= new Date(`${orderFromDate}T00:00:00`).getTime();
+    const toMatches = !orderToDate || createdAt <= new Date(`${orderToDate}T23:59:59.999`).getTime();
+    return statusMatches && fromMatches && toMatches;
+  });
   const visibleCustomers = view === "overview" ? recentCustomers.slice(0, 5) : recentCustomers;
-  const visibleOrders = view === "overview" ? paidOrders.slice(0, 5) : recentOrders;
+  const visibleOrders = view === "overview" ? paidOrders.slice(0, 5) : filteredOrders;
 
   async function submitProduct(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -234,10 +254,26 @@ export function AdminDashboard({
           </section>
 
           <section id="admin-orders" className={`dash-card new-users ${!["overview", "orders"].includes(view) ? "is-hidden" : ""}`}>
-            <div className="card-title"><h2>{view === "overview" ? "۵ سفارش پرداخت‌شده اخیر" : "همه سفارش‌ها"}</h2>{view === "overview" ? <a href="/account/orders">مشاهده همه</a> : <span>{money(orders.length)} سفارش</span>}</div>
+            <div className="card-title"><h2>{view === "overview" ? "۵ سفارش پرداخت‌شده اخیر" : "همه سفارش‌ها"}</h2>{view === "overview" ? <a href="/account/orders">مشاهده همه</a> : <span>{money(visibleOrders.length)} سفارش</span>}</div>
+            {view === "orders" ? (
+              <div className="order-filters">
+                <label><span>وضعیت سفارش</span><select value={orderStatusFilter} onChange={(event) => setOrderStatusFilter(event.target.value)}><option value="all">همه وضعیت‌ها</option><option value="Paid">فقط پرداخت‌شده‌ها</option><option value="Pending">در انتظار پرداخت</option><option value="Processing">در حال پردازش</option><option value="Shipped">ارسال‌شده</option><option value="Delivered">تحویل‌شده</option><option value="Cancelled">لغوشده</option></select></label>
+                <label><span>از تاریخ</span><input type="date" value={orderFromDate} onChange={(event) => setOrderFromDate(event.target.value)} /></label>
+                <label><span>تا تاریخ</span><input type="date" value={orderToDate} onChange={(event) => setOrderToDate(event.target.value)} /></label>
+                <button type="button" onClick={() => { setOrderStatusFilter("all"); setOrderFromDate(""); setOrderToDate(""); }}>پاک‌کردن فیلترها</button>
+              </div>
+            ) : null}
             {visibleOrders.length ? (
-              <div className="table-wrap"><table><thead><tr><th>سفارش</th><th>مشتری</th><th>مبلغ</th><th>وضعیت</th></tr></thead><tbody>
-                {visibleOrders.map((order) => <tr key={order.id}><td>#{order.id.slice(0, 7)}</td><td>{order.receiverFullName}</td><td>{money(order.totalAmount)}</td><td>{order.status}</td></tr>)}
+              <div className="table-wrap"><table className="orders-table"><thead><tr><th>شناسه سفارش</th><th>مشتری</th><th>مبلغ</th><th>تاریخ سفارش</th><th>وضعیت</th></tr></thead><tbody>
+                {visibleOrders.map((order) => (
+                  <Fragment key={order.id}>
+                    <tr className="order-row" tabIndex={0} onClick={() => setExpandedOrderId((current) => current === order.id ? null : order.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setExpandedOrderId((current) => current === order.id ? null : order.id); }}>
+                      <td><button type="button" className="order-id-button" aria-expanded={expandedOrderId === order.id}>#{order.id.slice(0, 8)} <span>{expandedOrderId === order.id ? "▲" : "▼"}</span></button></td>
+                      <td>{order.receiverFullName || "بدون نام"}</td><td>{money(order.totalAmount)} تومان</td><td>{date(order.createdAt)}</td><td><span className={`status ${order.status.toLowerCase()}`}>{orderStatusLabels[order.status] || order.status}</span></td>
+                    </tr>
+                    {expandedOrderId === order.id ? <tr className="order-details-row"><td colSpan={5}><div className="order-details"><div className="order-details-head"><b>اقلام این سفارش</b><span>شناسه کامل: <span dir="ltr">{order.id}</span></span></div>{order.items?.length ? <div className="order-items">{order.items.map((item, index) => <article key={item.id || `${order.id}-${index}`}><div><b>{item.productName}</b><small>تعداد: {money(item.quantity)}</small></div><strong>{money(item.totalPrice ?? (item.unitPrice || 0) * item.quantity)} تومان</strong></article>)}</div> : <p>اطلاعات اقلام این سفارش موجود نیست.</p>}{order.shippingAddress ? <div className="order-shipping"><b>اطلاعات ارسال:</b><span>{order.shippingAddress}</span></div> : null}</div></td></tr> : null}
+                  </Fragment>
+                ))}
               </tbody></table></div>
             ) : <EmptyRows text={view === "overview" ? "هنوز سفارش پرداخت‌شده‌ای وجود ندارد." : "سفارشی وجود ندارد."} />}
           </section>

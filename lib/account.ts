@@ -1,7 +1,8 @@
 import { getApiUrl } from "@/lib/env";
 
 export type Profile = { id: string; firstName: string; lastName: string; userName: string; email: string; phoneNumber: string; role: string };
-export type Order = { id: string; status: string; totalAmount: number; receiverFullName: string; createdAt: string; items: { productName: string }[] };
+export type OrderItem = { id?: string; productId?: string; productName: string; unitPrice?: number; quantity: number; totalPrice?: number };
+export type Order = { id: string; status: string; totalAmount: number; receiverFullName: string; receiverPhoneNumber?: string; shippingAddress?: string; createdAt: string; items: OrderItem[] };
 export type AdminStats = { totalUsers: number; totalOrders: number; totalProducts: number; totalRevenue: number };
 export type AdminUser = { id: string; firstName: string; lastName: string; userName: string; email: string; phoneNumber: string; role: string; createdAt: string };
 export type AdminCategory = { id: string; name: string; description?: string | null };

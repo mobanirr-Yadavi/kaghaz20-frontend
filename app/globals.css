@@ -365,6 +365,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   }
 }
 
+#checkout-form fieldset label>span>span{width:3.5rem;height:3.5rem;font-size:1.875rem;border-radius:.75rem}
+#checkout-form fieldset label>span>span img{width:3rem;height:3rem}
+
+.order-filters{display:grid;grid-template-columns:minmax(180px,1.2fr) repeat(2,minmax(150px,1fr)) auto;align-items:end;gap:12px;padding:18px 20px;border-bottom:1px solid #e7ecf3;background:#f8faff}.order-filters label{display:grid;gap:7px}.order-filters label span{font-size:11px;font-weight:900;color:#52617b}.order-filters select,.order-filters input{width:100%;height:44px;border:1px solid #dce4f0;border-radius:10px;background:#fff;padding:0 11px;color:#001b55;font:inherit;font-size:12px;font-weight:800;outline:none}.order-filters select:focus,.order-filters input:focus{border-color:#0b4bc4;box-shadow:0 0 0 3px #0b4bc414}.order-filters button{height:44px;border:0;border-radius:10px;background:#eaf0fa;padding:0 16px;color:#24416f;font-size:11px;font-weight:900;cursor:pointer}.orders-table .order-row{cursor:pointer;transition:.15s}.orders-table .order-row:hover,.orders-table .order-row:focus{background:#f1f6ff;outline:none}.order-id-button{display:inline-flex!important;align-items:center;gap:7px;color:#0643c6!important}.order-id-button span{font-size:8px}.order-details-row>td{padding:0!important;background:#f7faff}.order-details{margin:12px;padding:18px;border:1px solid #dce6f5;border-radius:12px;background:#fff}.order-details-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:13px}.order-details-head>b{font-size:13px}.order-details-head>span{color:#77849a;font-size:10px}.order-items{display:grid;gap:8px}.order-items article{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border-radius:9px;background:#f5f8fd}.order-items article div{display:grid;gap:4px}.order-items article b{font-size:12px}.order-items article small{color:#68758d;font-size:10px}.order-items article strong{color:#073b9d;font-size:11px}.order-shipping{display:flex;gap:8px;margin-top:12px;padding:11px 13px;border-radius:9px;background:#fff8e8;font-size:11px;white-space:pre-line}.status.paid{background:#e7f8ed;color:#13733a}
+
+@media(max-width:760px){.order-filters{grid-template-columns:1fr 1fr;padding:13px}.order-filters label:first-child,.order-filters button{grid-column:1/-1}.orders-table{min-width:720px!important}.order-details{min-width:650px}.order-details-head{align-items:flex-start;flex-direction:column}.order-shipping{flex-direction:column}}
+
 @media (prefers-reduced-motion: reduce) {
   .page-transition-loader,
   .page-transition-loader__logo,

@@ -21,8 +21,7 @@ export function CartSummary({ subtotal, discount, shipping, onCheckout, disabled
       <div className="mt-5 border-t border-borderBlue pt-5">
         <div className="flex justify-between text-lg font-black text-navy"><span>مبلغ قابل پرداخت</span><span>{formatPrice(Math.max(0, subtotal - discount + shipping))}</span></div>
       </div>
-      <button className="mt-6 h-12 w-full rounded-lg bg-buttonGold font-black text-white transition hover:bg-[#d89b28] disabled:cursor-not-allowed disabled:opacity-50" disabled={disabled} onClick={onCheckout} type="button">ادامه ثبت سفارش</button>
-      <Link className="mt-3 grid h-11 place-items-center rounded-lg border border-navy font-black text-navy" href="/shop">ادامه خرید</Link>
+      <button className="mt-6 h-12 w-full rounded-lg bg-buttonGold font-black text-white transition hover:bg-[#d89b28] disabled:cursor-not-allowed disabled:opacity-50" disabled={disabled} onClick={onCheckout} type="button">ادامه خرید</button>
     </aside>
   );
 }
