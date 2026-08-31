@@ -18,8 +18,9 @@ export function UserDashboard({ profile, orders }: { profile: Profile; orders: O
   const [currentProfile, setCurrentProfile] = useState(profile);
   const [message, setMessage] = useState("");
   const processing = orders.filter((order) => ["Pending", "Processing"].includes(order.status)).length;
-  const total = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-
+const total = orders
+  .filter((order) => order.status === "Delivered")
+  .reduce((sum, order) => sum + order.totalAmount, 0);
   async function submitProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");

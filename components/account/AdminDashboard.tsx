@@ -189,7 +189,21 @@ export function AdminDashboard({
           <article><i>◇</i><span>تعداد محصولات<b>{money(productRows.length || stats.totalProducts)}</b><small>محصول</small></span></article>
           <article><i>□</i><span>تعداد سفارش‌ها<b>{money(stats.totalOrders)}</b><small>سفارش</small></span></article>
           <article><i>♙</i><span>تعداد مشتریان<b>{money(customers.length || stats.totalUsers)}</b><small>مشتری</small></span></article>
-          <article><i>◎</i><span>کل فروش<b>{money(stats.totalRevenue)}</b><small>تومان</small></span></article>
+          <article>
+  <i>◎</i>
+  <span>
+    کل فروش
+    <b>
+      {money(
+        paidOrders.reduce(
+          (total, order) => total + (order.totalAmount || 0),
+          0
+        )
+      )}
+    </b>
+    <small>تومان</small>
+  </span>
+</article>
         </div>
 
         <div className={`admin-grid ${view !== "overview" ? "admin-single-view" : ""}`}>
