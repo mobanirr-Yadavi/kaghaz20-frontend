@@ -66,12 +66,17 @@ async function proxy(
     });
 
     const responseText = await upstreamResponse.text();
+    const responseHeaders = new Headers({
+      "content-type":
+        upstreamResponse.headers.get("content-type") || "application/json",
+    });
+    const location = upstreamResponse.headers.get("location");
+    if (location) {
+      responseHeaders.set("location", location);
+    }
     const response = new NextResponse(responseText, {
       status: upstreamResponse.status,
-      headers: {
-        "content-type":
-          upstreamResponse.headers.get("content-type") || "application/json",
-      },
+      headers: responseHeaders,
     });
 
     const lowerPath = normalizedPath.toLowerCase();
