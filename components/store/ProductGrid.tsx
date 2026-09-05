@@ -15,7 +15,6 @@ export function StoreProductCard({ product }: { product: Product }) {
         <Image alt={product.title} className="mx-auto h-32 w-auto object-contain" height={140} src={product.image} width={150} />
         <h3 className="mt-4 min-h-10 text-center text-sm font-black leading-6 text-textNavy">{product.title}</h3>
       </Link>
-      <p className="mt-1 text-center text-xs font-semibold text-muted">{product.meta}</p>
       <div className="mt-3 flex items-center justify-between text-xs">
         <span className="font-black text-buttonGold">★ {product.rating}</span>
         <span className="text-muted">({new Intl.NumberFormat("fa-IR").format(product.reviewCount)})</span>

@@ -10,44 +10,36 @@ import { ShopFilterSidebar } from "./ShopFilterSidebar";
 import { ShopToolbar } from "./ShopToolbar";
 import { ProductGrid } from "./ProductGrid";
 import { QualityGuaranteeBanner } from "./QualityGuaranteeBanner";
-import { ShopPagination } from "./ShopPagination";
 import { ShopFAQ } from "./ShopFAQ";
 
-export function ShopPageClient({ products }: { products: Product[] }) {
+export function ShopPageClient({ products, initialSearch = "" }: { products: Product[]; initialSearch?: string }) {
   const { addItem } = useCart();
-  const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
-  const [brand, setBrand] = useState("");
   const [size, setSize] = useState("");
-  const [onlyAvailable, setOnlyAvailable] = useState(false);
-  const [maxPrice, setMaxPrice] = useState(5000000);
   const [sort, setSort] = useState("popular");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const list = useMemo(() => {
     let result = products.filter((product) =>
-      (!search || product.title.includes(search) || product.englishTitle.toLowerCase().includes(search.toLowerCase())) &&
       (category === "all" || product.category === category || product.size.startsWith(category)) &&
-      (!brand || product.brand === brand) && (!size || product.size.startsWith(size)) &&
-      (!onlyAvailable || product.stockStatus === "available") && product.priceValue <= maxPrice
+      (!size || product.size.startsWith(size)) &&
+      (!initialSearch || `${product.title} ${product.englishTitle} ${product.meta} ${product.category}`.toLocaleLowerCase("fa").includes(initialSearch.toLocaleLowerCase("fa")))
     );
     if (sort === "cheap") result = [...result].sort((a, b) => a.priceValue - b.priceValue);
     if (sort === "expensive") result = [...result].sort((a, b) => b.priceValue - a.priceValue);
     if (sort === "rating") result = [...result].sort((a, b) => b.rating - a.rating);
     return result;
-  }, [products, search, category, brand, size, onlyAvailable, maxPrice, sort]);
+  }, [products, category, size, sort, initialSearch]);
 
-  const clear = () => { setSearch(""); setCategory("all"); setBrand(""); setSize(""); setOnlyAvailable(false); setMaxPrice(5000000); };
   const add = (product: Product) => addItem(product);
-  const filters = <ShopFilterSidebar search={search} setSearch={setSearch} category={category} setCategory={setCategory} brand={brand} setBrand={setBrand} size={size} setSize={setSize} onlyAvailable={onlyAvailable} setOnlyAvailable={setOnlyAvailable} maxPrice={maxPrice} setMaxPrice={setMaxPrice} clear={clear} />;
 
   return <Container className="pb-8">
     <div className="hidden lg:block"><ShopCategoryTabs categories={shopCategories} active={category} onChange={setCategory} /></div>
-    <button className="my-4 h-11 w-full rounded-xl border border-borderBlue bg-white font-black text-navy shadow-soft lg:hidden" onClick={() => setFiltersOpen(true)} type="button">فیلتر و جست‌وجوی محصولات</button>
-    {filtersOpen && <div className="fixed inset-0 z-[70] bg-navy/45 p-4 lg:hidden" onClick={() => setFiltersOpen(false)}><div className="mx-auto mt-8 max-h-[85vh] max-w-md overflow-y-auto rounded-2xl" onClick={(event) => event.stopPropagation()}>{filters}<button className="sticky bottom-0 h-12 w-full rounded-b-xl bg-buttonGold font-black text-white" onClick={() => setFiltersOpen(false)} type="button">اعمال فیلتر و مشاهده نتایج</button></div></div>}
+    <button className="my-4 h-11 w-full rounded-xl border border-borderBlue bg-white font-black text-navy shadow-soft lg:hidden" onClick={() => setFiltersOpen(true)} type="button">فیلتر بر اساس سایز</button>
+    {filtersOpen && <div className="fixed inset-0 z-[70] bg-navy/45 p-4 lg:hidden" onClick={() => setFiltersOpen(false)}><div className="mx-auto mt-8 max-w-md" onClick={(event) => event.stopPropagation()}><ShopFilterSidebar size={size} setSize={setSize}/><button className="mt-3 h-12 w-full rounded-xl bg-buttonGold font-black text-white" onClick={() => setFiltersOpen(false)} type="button">مشاهده محصولات</button></div></div>}
     <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
-      <div className="hidden lg:block">{filters}</div>
-      <main><ShopToolbar count={list.length} sort={sort} setSort={setSort} /><ProductGrid products={list} onAdd={add} /><QualityGuaranteeBanner /><ShopPagination /><ShopFAQ /></main>
+      <div className="hidden lg:block"><ShopFilterSidebar size={size} setSize={setSize}/></div>
+      <main><ShopToolbar count={list.length} sort={sort} setSort={setSort} /><ProductGrid products={list} onAdd={add} /><QualityGuaranteeBanner /><ShopFAQ /></main>
     </div>
   </Container>;
 }

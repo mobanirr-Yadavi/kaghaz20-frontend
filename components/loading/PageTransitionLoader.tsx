@@ -8,7 +8,7 @@ const LOADER_DURATION = 600;
 
 export function PageTransitionLoader() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstRender = useRef(true);
 
@@ -64,7 +64,6 @@ export function PageTransitionLoader() {
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      showLoader();
       return;
     }
 

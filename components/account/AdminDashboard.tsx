@@ -187,7 +187,7 @@ export function AdminDashboard({
 
         <div id="admin-stats" className={`metric-grid admin-metrics ${view !== "overview" ? "is-hidden" : ""}`}>
           <article><i>◇</i><span>تعداد محصولات<b>{money(productRows.length || stats.totalProducts)}</b><small>محصول</small></span></article>
-          <article><i>□</i><span>تعداد سفارش‌ها<b>{money(stats.totalOrders)}</b><small>سفارش</small></span></article>
+          <article><i>□</i><span>سفارش‌های پرداخت‌شده<b>{money(paidOrders.length)}</b><small>سفارش</small></span></article>
           <article><i>♙</i><span>تعداد مشتریان<b>{money(customers.length || stats.totalUsers)}</b><small>مشتری</small></span></article>
           <article>
   <i>◎</i>

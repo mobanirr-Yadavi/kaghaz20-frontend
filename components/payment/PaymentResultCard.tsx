@@ -2,11 +2,18 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/components/cart/CartProvider";
 
 export function PaymentResultCard({ success, trackingCode, code }: { success: boolean; trackingCode?: string; code?: string }) {
   const { clearCart } = useCart();
-  useEffect(() => { if (success) clearCart(); }, [success, clearCart]);
+  const router = useRouter();
+  useEffect(() => {
+    if (!success) return;
+    clearCart();
+    const redirectTimer = window.setTimeout(() => router.replace("/account#orders"), 1500);
+    return () => window.clearTimeout(redirectTimer);
+  }, [success, clearCart, router]);
 
   return (
     <section className="mx-auto max-w-xl rounded-2xl bg-white p-6 text-center shadow-card sm:p-10">
@@ -15,7 +22,7 @@ export function PaymentResultCard({ success, trackingCode, code }: { success: bo
       <p className="mt-3 text-sm font-semibold text-muted">{success ? "سفارش شما ثبت شد و از بخش سفارش‌ها قابل پیگیری است." : "مبلغی از حساب شما کسر نشده است؛ می‌توانید دوباره تلاش کنید."}</p>
       {trackingCode && <p className="mt-5 rounded-xl bg-softBlue p-3 text-sm font-black text-navy">کد پیگیری: <span dir="ltr">{trackingCode}</span></p>}
       {!success && code && <p className="mt-2 text-xs text-muted">کد نتیجه: <span dir="ltr">{code}</span></p>}
-      <div className="mt-6 grid gap-3 sm:grid-cols-2"><Link className="grid h-12 place-items-center rounded-xl bg-navy font-black text-white" href="/account/orders">مشاهده سفارش‌ها</Link><Link className="grid h-12 place-items-center rounded-xl border border-navy font-black text-navy" href={success ? "/shop" : "/cart"}>{success ? "بازگشت به فروشگاه" : "تلاش دوباره"}</Link></div>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2"><Link className="grid h-12 place-items-center rounded-xl bg-navy font-black text-white" href="/account#orders">مشاهده سفارش‌ها</Link><Link className="grid h-12 place-items-center rounded-xl border border-navy font-black text-navy" href={success ? "/shop" : "/cart"}>{success ? "بازگشت به فروشگاه" : "تلاش دوباره"}</Link></div>
     </section>
   );
 }

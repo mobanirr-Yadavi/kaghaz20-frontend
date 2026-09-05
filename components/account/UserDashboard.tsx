@@ -5,6 +5,7 @@ import type { Order, Profile } from "@/lib/account";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
 
 const statusLabel: Record<string, string> = {
+  Paid: "پرداخت‌شده",
   Pending: "در حال پردازش",
   Processing: "در حال پردازش",
   Shipped: "ارسال شده",
@@ -18,8 +19,8 @@ export function UserDashboard({ profile, orders }: { profile: Profile; orders: O
   const [currentProfile, setCurrentProfile] = useState(profile);
   const [message, setMessage] = useState("");
   const processing = orders.filter((order) => ["Pending", "Processing"].includes(order.status)).length;
-const total = orders
-  .filter((order) => order.status === "Delivered")
+  const paidOrders = orders.filter((order) => order.status.toLowerCase() === "paid");
+const total = paidOrders
   .reduce((sum, order) => sum + order.totalAmount, 0);
   async function submitProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,7 +73,7 @@ const total = orders
           <div className="user-main">
             <div className="metric-grid user-metrics">
               <article><i>▣</i><span>در حال پردازش<b>{processing}</b><small>سفارش</small></span></article>
-              <article><i>□</i><span>سفارش‌های من<b>{orders.length}</b><small>سفارش</small></span></article>
+              <article><i>□</i><span>سفارش‌های پرداخت‌شده<b>{paidOrders.length}</b><small>سفارش</small></span></article>
               <article><i>▤</i><span>مجموع خرید<b>{money(total)}</b><small>تومان</small></span></article>
             </div>
 

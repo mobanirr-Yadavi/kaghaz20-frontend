@@ -98,7 +98,7 @@ export function Footer() {
             dir="ltr"
             className="text-right"
           >
-            09382302930
+            09120241178
           </li>
 
           <li>info@kaghaz20.ir</li>
@@ -121,7 +121,7 @@ export function Footer() {
           <a
             aria-label="تماس تلفنی"
             className="grid size-8 place-items-center rounded-full bg-white/12 text-xs font-black transition hover:bg-buttonGold hover:text-navy"
-            href="tel:+989382302930"
+            href="tel:+989120241178"
           >
             ☎
           </a>

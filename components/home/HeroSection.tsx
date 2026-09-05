@@ -10,6 +10,7 @@ export function HeroSection() {
           alt="کاغذ پریمیوم Double A در اندازه‌های A3، A4 و A5"
           imageClassName="object-center"
           desktopAspectClassName="sm:aspect-[1672/941]"
+          frameClassName="lg:!h-[clamp(620px,70vh,760px)] lg:!aspect-auto"
         />
       </Container>
     </section>

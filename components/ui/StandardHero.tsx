@@ -33,7 +33,7 @@ export function StandardHero({
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-[clamp(16px,2vw,28px)] bg-[linear-gradient(135deg,#eef5ff,#f8fbff)] shadow-premium ${
+      className={`relative w-full overflow-hidden rounded-[clamp(16px,2vw,28px)] bg-[linear-gradient(135deg,#eef5ff,#f8fbff)] shadow-premium lg:h-[clamp(480px,62vh,560px)] lg:aspect-auto ${
         resolvedMobileSrc
           ? `${mobileAspectClassName} sm:h-auto`
           : "h-[260px] sm:h-auto"
@@ -54,7 +54,7 @@ export function StandardHero({
           fill
           priority
           sizes="(max-width: 1536px) calc(100vw - 48px), 1440px"
-          className={`hidden object-contain sm:block ${imageClassName}`}
+          className={`hidden object-contain sm:block lg:object-fill ${imageClassName}`}
         />
       )}
     </div>

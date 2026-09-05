@@ -18,6 +18,14 @@ async function apiGet<T>(path: string): Promise<T> {
 
 const money = new Intl.NumberFormat("fa-IR");
 
+function getProductSize(item: ApiProduct): string {
+  const source = `${item.name} ${item.categoryName || ""} ${item.description || ""}`;
+  const match = source.match(/(?:^|[^a-z0-9])a\s*[-–]?\s*([345۳۴۵])(?:[^0-9۰-۹]|$)/i);
+  if (!match) return "استاندارد";
+  const digit = ({ "۳": "3", "۴": "4", "۵": "5" } as Record<string, string>)[match[1]] || match[1];
+  return `A${digit}`;
+}
+
 function mapProduct(item: ApiProduct): Product {
   return {
     id: item.id,
@@ -26,7 +34,7 @@ function mapProduct(item: ApiProduct): Product {
     englishTitle: item.name,
     brand: "کاغذ ۲۰",
     category: item.categoryName || "سایر محصولات",
-    size: "استاندارد",
+    size: getProductSize(item),
     weight: "—",
     sheets: "—",
     meta: item.categoryName || "محصول فروشگاه",

@@ -8,7 +8,7 @@ export function NavigationBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden min-w-0 flex-1 lg:block" aria-label="ناوبری اصلی">
+    <nav className="hidden min-w-0 lg:absolute lg:left-1/2 lg:block lg:-translate-x-1/2" aria-label="ناوبری اصلی">
         <div className="flex h-[68px] items-center justify-center gap-4 whitespace-nowrap text-[12px] font-bold text-navy xl:gap-6 xl:text-sm">
           {navigationLinks.map((item) => {
             const active = item.match?.some((match) => (match === "/" ? pathname === "/" : pathname.startsWith(match)));

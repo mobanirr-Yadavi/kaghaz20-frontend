@@ -14,7 +14,7 @@ export default function CartPage() {
           <a
             href="#cart-content"
             aria-label="رفتن به ادامه ثبت سفارش"
-            className="relative mb-5 block aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl bg-softBlue shadow-premium sm:mb-6 sm:aspect-[1916/821]"
+            className="relative mb-5 block aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl bg-softBlue shadow-premium sm:mb-6 sm:aspect-[1916/821] lg:h-[clamp(480px,62vh,560px)] lg:aspect-auto"
           >
             <Image
               alt="سبد خرید"
@@ -27,7 +27,7 @@ export default function CartPage() {
 
             <Image
               alt="سبد خرید"
-              className="hidden object-contain sm:block"
+              className="hidden object-contain sm:block lg:object-fill"
               fill
               priority
               sizes="(max-width: 1536px) 100vw, 1440px"
