@@ -33,9 +33,7 @@ export function PaymentResultCard({
     <section className="mx-auto max-w-xl rounded-2xl bg-white p-6 text-center shadow-card sm:p-10">
       <div
         className={`mx-auto grid size-20 place-items-center rounded-full text-4xl ${
-          success
-            ? "bg-emerald-50 text-emerald-600"
-            : "bg-red-50 text-red-600"
+          success ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
         }`}
       >
         {success ? "✓" : "×"}
@@ -103,4 +101,3 @@ export function PaymentResultCard({
     </section>
   );
 }
-```
