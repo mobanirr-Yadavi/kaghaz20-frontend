@@ -24,7 +24,7 @@ export function PaymentResultCard({
 
     const redirectTimer = window.setTimeout(() => {
       router.replace("/account#orders");
-    }, 1500);
+    }, 6000);
 
     return () => window.clearTimeout(redirectTimer);
   }, [success, clearCart, router]);
