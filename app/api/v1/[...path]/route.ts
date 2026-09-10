@@ -4,6 +4,20 @@ import { getApiUrl } from "@/lib/env";
 
 const API_URL = getApiUrl();
 
+const AUTH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: "lax" as const,
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+  domain:
+    process.env.NODE_ENV === "production"
+      ? ".kaghaz20.ir"
+      : undefined,
+
+  // JWT بک‌اند فعلاً 60 دقیقه اعتبار دارد
+  maxAge: 60 * 60,
+};
+
 function roleFromToken(token: string): string | undefined {
   try {
     const claims = JSON.parse(
@@ -21,8 +35,17 @@ function roleFromToken(token: string): string | undefined {
 }
 
 function clearAuthCookies(response: NextResponse): void {
-  response.cookies.delete("paper_token");
-  response.cookies.delete("paper_role");
+  response.cookies.set("paper_token", "", {
+    ...AUTH_COOKIE_OPTIONS,
+    maxAge: 0,
+    expires: new Date(0),
+  });
+
+  response.cookies.set("paper_role", "", {
+    ...AUTH_COOKIE_OPTIONS,
+    maxAge: 0,
+    expires: new Date(0),
+  });
 }
 
 async function proxy(
@@ -32,29 +55,52 @@ async function proxy(
   const { path } = await context.params;
   const normalizedPath = path.join("/");
 
-  // Logout is a frontend-only operation because the backend uses stateless JWTs.
-  if (request.method === "POST" && normalizedPath.toLowerCase() === "auth/logout") {
+  // Logout سمت فرانت چون JWT بک‌اند Stateless است
+  if (
+    request.method === "POST" &&
+    normalizedPath.toLowerCase() === "auth/logout"
+  ) {
     const response = new NextResponse(null, { status: 204 });
+
     clearAuthCookies(response);
+
     return response;
   }
 
-  const upstreamUrl = new URL(`${API_URL}/api/v1/${normalizedPath}`);
+  const upstreamUrl = new URL(
+    `${API_URL}/api/v1/${normalizedPath}`,
+  );
+
   request.nextUrl.searchParams.forEach((value, key) => {
     upstreamUrl.searchParams.append(key, value);
   });
 
-  const token = (await cookies()).get("paper_token")?.value;
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get("paper_token")?.value;
+
   const headers = new Headers();
 
   const contentType = request.headers.get("content-type");
   const accept = request.headers.get("accept");
-  if (contentType) headers.set("content-type", contentType);
-  if (accept) headers.set("accept", accept);
-  if (token) headers.set("authorization", `Bearer ${token}`);
+
+  if (contentType) {
+    headers.set("content-type", contentType);
+  }
+
+  if (accept) {
+    headers.set("accept", accept);
+  }
+
+  if (token) {
+    headers.set("authorization", `Bearer ${token}`);
+  }
 
   const hasBody = !["GET", "HEAD"].includes(request.method);
-  const body = hasBody ? await request.arrayBuffer() : undefined;
+
+  const body = hasBody
+    ? await request.arrayBuffer()
+    : undefined;
 
   try {
     const upstreamResponse = await fetch(upstreamUrl, {
@@ -66,20 +112,28 @@ async function proxy(
     });
 
     const responseText = await upstreamResponse.text();
+
     const responseHeaders = new Headers({
       "content-type":
-        upstreamResponse.headers.get("content-type") || "application/json",
+        upstreamResponse.headers.get("content-type") ||
+        "application/json",
     });
-    const location = upstreamResponse.headers.get("location");
+
+    const location =
+      upstreamResponse.headers.get("location");
+
     if (location) {
       responseHeaders.set("location", location);
     }
+
     const response = new NextResponse(responseText, {
       status: upstreamResponse.status,
       headers: responseHeaders,
     });
 
-    const lowerPath = normalizedPath.toLowerCase();
+    const lowerPath =
+      normalizedPath.toLowerCase();
+
     const isTokenAction =
       lowerPath === "auth/login" ||
       lowerPath === "auth/register" ||
@@ -89,29 +143,40 @@ async function proxy(
     if (upstreamResponse.ok && isTokenAction) {
       try {
         const payload = JSON.parse(responseText);
+
         const issuedToken =
           typeof payload?.data === "string"
             ? payload.data
-            : payload?.data?.token || payload?.data?.accessToken;
+            : payload?.data?.token ||
+              payload?.data?.accessToken;
 
-        if (typeof issuedToken === "string" && issuedToken.length > 0) {
-          const cookieOptions = {
-            httpOnly: true,
-            sameSite: "lax" as const,
-            secure: process.env.NODE_ENV === "production",
-            path: "/",
-            maxAge: 60 * 60 * 24 * 7,
-          };
+        if (
+          typeof issuedToken === "string" &&
+          issuedToken.length > 0
+        ) {
+          response.cookies.set(
+            "paper_token",
+            issuedToken,
+            AUTH_COOKIE_OPTIONS,
+          );
 
-          response.cookies.set("paper_token", issuedToken, cookieOptions);
+          const role =
+            payload?.data?.role ||
+            roleFromToken(issuedToken);
 
-          const role = payload?.data?.role || roleFromToken(issuedToken);
-          if (typeof role === "string" && role.length > 0) {
-            response.cookies.set("paper_role", role, cookieOptions);
+          if (
+            typeof role === "string" &&
+            role.length > 0
+          ) {
+            response.cookies.set(
+              "paper_role",
+              role,
+              AUTH_COOKIE_OPTIONS,
+            );
           }
         }
       } catch {
-        // Keep the successful upstream response if it has no token payload.
+        // پاسخ موفق بک‌اند را نگه می‌داریم
       }
     }
 
@@ -124,9 +189,12 @@ async function proxy(
     return NextResponse.json(
       {
         isSuccess: false,
-        message: "سرویس API در دسترس نیست. لطفاً دوباره تلاش کنید.",
+        message:
+          "سرویس API در دسترس نیست. لطفاً دوباره تلاش کنید.",
       },
-      { status: 503 },
+      {
+        status: 503,
+      },
     );
   }
 }
