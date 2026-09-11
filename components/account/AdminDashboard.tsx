@@ -7,6 +7,7 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import { toEnglishDigits } from "@/lib/digits";
 import type { AdminCategory, AdminProduct, AdminStats, AdminUser, Order, Profile } from "@/lib/account";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
+import { RichTextEditor } from "./RichTextEditor";
 
 // Shared Jalali date picker setup; portal keeps the calendar out of the wrapping <label> and card overflow.
 const jalaliPickerProps = { calendar: persian, locale: persian_fa, calendarPosition: "bottom-right", portal: true, containerStyle: { width: "100%" }, placeholder: "انتخاب تاریخ" } as const;
@@ -218,13 +219,13 @@ export function AdminDashboard({
             <div className="card-title"><h2>محصولات</h2><span>{editingProductId ? "ویرایش محصول" : "محصول جدید"}</span></div>
             <form className="admin-form" onSubmit={submitProduct}>
               <input required placeholder="نام محصول" value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} />
-              <input placeholder="توضیحات" value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} />
               <input required inputMode="numeric" placeholder="قیمت" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: toEnglishDigits(e.target.value).replace(/\D/g, "") })} />
               <input required inputMode="numeric" placeholder="تعداد" value={productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: toEnglishDigits(e.target.value).replace(/\D/g, "") })} />
               <select required value={productForm.categoryId} onChange={(e) => setProductForm({ ...productForm, categoryId: e.target.value })}>
                 <option value="">انتخاب دسته‌بندی</option>
                 {categoryRows.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
               </select>
+              <RichTextEditor label="توضیحات محصول" value={productForm.description} onChange={(description) => setProductForm((form) => ({ ...form, description }))} />
               <button type="submit">{editingProductId ? "ذخیره ویرایش" : "افزودن محصول"}</button>
               {editingProductId ? <button type="button" onClick={() => { setEditingProductId(null); setProductForm(emptyProduct); }}>انصراف</button> : null}
             </form>
