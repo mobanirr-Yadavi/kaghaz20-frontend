@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { isMobile, mobileOnInput, normalizeMobile, toEnglishDigits } from "@/lib/digits";
+import { CooldownButton } from "./CooldownButton";
 
 type Method = "mobile" | "email";
 type OtpState = "idle" | "checking" | "valid" | "invalid";
@@ -85,6 +86,8 @@ export function AuthPage({
 
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [otpCooldown, setOtpCooldown] = useState(0);
+  // 0 → 1 over the 2-minute wait; drives the fill on the send/resend buttons.
+  const cooldownProgress = otpCooldown > 0 ? (OTP_COOLDOWN_SECONDS - otpCooldown) / OTP_COOLDOWN_SECONDS : null;
 
   useEffect(() => {
     if (!isMobile(phone)) {
@@ -595,9 +598,10 @@ export function AuthPage({
               </p>
             )}
 
-            <button
+            <CooldownButton
               className="auth-main-action"
               disabled={loading || otpCooldown > 0}
+              progress={loading ? null : cooldownProgress}
               type="submit"
             >
               {loading
@@ -605,7 +609,7 @@ export function AuthPage({
                 : otpCooldown > 0
                   ? `ارسال مجدد تا ${formatCountdown(otpCooldown)}`
                   : "ارسال پیامک یکبار مصرف"}
-            </button>
+            </CooldownButton>
           </form>
         ) : mobileStep === "otp" ? (
           <form
@@ -657,16 +661,17 @@ export function AuthPage({
               {loading ? "در حال بررسی…" : "تأیید و ورود"}
             </button>
 
-            <button
-              className="otp-back"
+            <CooldownButton
+              className="otp-resend"
               type="button"
               disabled={loading || otpCooldown > 0}
+              progress={loading ? null : cooldownProgress}
               onClick={() => void requestOtp()}
             >
               {otpCooldown > 0
                 ? `ارسال مجدد کد تا ${formatCountdown(otpCooldown)}`
                 : "ارسال مجدد کد"}
-            </button>
+            </CooldownButton>
 
             <button
               className="otp-back"
