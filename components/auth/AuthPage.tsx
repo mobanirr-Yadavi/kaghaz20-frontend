@@ -26,7 +26,8 @@ async function request(path: string, body: Record<string, string>) {
 
   const payload = await response.json().catch(() => null);
 
-  if (!response.ok) {
+  // The backend can answer 200 with { isSuccess: false }; treat that as a failure too.
+  if (!response.ok || payload?.isSuccess === false) {
     throw new Error(
       payload?.message ||
         payload?.title ||
@@ -41,8 +42,8 @@ async function request(path: string, body: Record<string, string>) {
 const OTP_COOLDOWN_SECONDS = 120;
 const otpSentKey = (mobile: string) => `kaghaz20-otp-sent-${mobile}`;
 
-// Seconds before this number may request another code. Kept in localStorage so a
-// reload doesn't reset it; the API proxy enforces the same limit server-side.
+// Seconds before this number may request another code. This is only the UI countdown
+// (rate limiting itself is the backend's job); kept in localStorage so a reload doesn't reset it.
 function otpSecondsLeft(mobile: string) {
   try {
     const sentAt = Number(window.localStorage.getItem(otpSentKey(mobile)));
@@ -58,7 +59,16 @@ function markOtpSent(mobile: string) {
   try {
     window.localStorage.setItem(otpSentKey(mobile), String(Date.now()));
   } catch {
-    // Storage may be blocked on some mobile browsers; the server still limits requests.
+    // Storage may be blocked on some mobile browsers; the countdown is then skipped.
+  }
+}
+
+// After a code is verified the wait is over, so the next login isn't blocked.
+function clearOtpSent(mobile: string) {
+  try {
+    window.localStorage.removeItem(otpSentKey(mobile));
+  } catch {
+    // Storage may be blocked; nothing to clear.
   }
 }
 
@@ -298,6 +308,8 @@ export function AuthPage({
       const data = payload?.data;
 
       setOtpState("valid");
+      clearOtpSent(phone);
+      setOtpCooldown(0);
 
       if (typeof data?.registrationToken === "string" && !data?.accessToken) {
         setRegistrationToken(data.registrationToken);
