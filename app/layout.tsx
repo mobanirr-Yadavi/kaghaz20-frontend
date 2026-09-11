@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { PageTransitionLoader } from "@/components/loading/PageTransitionLoader";
 import { CartProvider } from "@/components/cart/CartProvider";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import "./globals.css";
 import Script from "next/script";
 
@@ -23,7 +24,13 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon-kaghaz20.png",
     shortcut: "/favicon-kaghaz20.png",
-    apple: "/favicon-kaghaz20.png",
+    apple: "/icons/icon-192x192.png",
+  },
+  // Home-screen app on iPhone/iPad (the manifest in app/manifest.ts covers other browsers).
+  appleWebApp: {
+    capable: true,
+    title: siteName,
+    statusBarStyle: "default",
   },
   openGraph: {
     type: "website",
@@ -43,6 +50,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#001B55",
 };
 
 export default function RootLayout({
@@ -53,6 +61,10 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body>
+        {/* Chrome can fire beforeinstallprompt before React hydrates; keep it for InstallPrompt. */}
+        <Script id="capture-install-prompt" strategy="beforeInteractive">
+          {`window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__kaghazInstallPrompt=e;window.dispatchEvent(new Event("kaghaz-install-available"));});`}
+        </Script>
         <CartProvider>
           <PageTransitionLoader />
           {children}
@@ -60,6 +72,7 @@ export default function RootLayout({
             <MobileBottomNav />
           </Suspense>
         </CartProvider>
+        <InstallPrompt />
         <Script
           id="goftino-widget"
           strategy="afterInteractive"
