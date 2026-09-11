@@ -209,7 +209,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
       }
 
       const registered = await run(() =>
-        request("/api-v1/Auth/Register", {
+        request(process.env.PAPER_API_URL + "/api/v1/Auth/Register", {
           firstName: data.firstName.trim(),
           lastName: data.lastName.trim(),
           userName: data.userName.trim(),
@@ -240,7 +240,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     }
 
     const loggedIn = await run(() =>
-      request("/api-v1/Auth/Login", {
+      request(process.env.PAPER_API_URL + "/api/v1/Auth/Login", {
         email,
         password,
       }).then(rememberAuthToken),
@@ -265,7 +265,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     }
 
     const sent = await run(() =>
-      request("/api-v1/Auth/SendOtp", {
+      request(process.env.PAPER_API_URL + "/api/v1/Auth/SendOtp", {
         mobileNo: phone,
       }),
     );
@@ -303,10 +303,13 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     setError("");
 
     try {
-      const payload = await request("/api-v1/Auth/VerifyOtp", {
-        mobile: phone,
-        code,
-      });
+      const payload = await request(
+        process.env.PAPER_API_URL + "/api/v1/Auth/VerifyOtp",
+        {
+          mobile: phone,
+          code,
+        },
+      );
       const data = payload?.data;
       // Stores data.accessToken; a registrationToken alone is not a login token.
       rememberAuthToken(payload);
@@ -350,7 +353,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     }
 
     const completed = await run(() =>
-      request("/api-v1/Auth/CompleteRegistration", {
+      request(process.env.PAPER_API_URL + "/api/v1/Auth/CompleteRegistration", {
         registrationToken,
         firstName,
         lastName,
