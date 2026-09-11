@@ -3,6 +3,8 @@
 import Image from "next/image";
 import type { CartItem } from "@/types/cart";
 import { QuantitySelector } from "@/components/ui/QuantitySelector";
+import { TrashIcon } from "@/components/ui/Icons";
+import { confirmDelete } from "@/lib/confirmDelete";
 
 type CartTableProps = {
   items: CartItem[];
@@ -28,7 +30,22 @@ export function CartTable({ items, updateQuantity, removeItem }: CartTableProps)
           <p className="text-sm font-black text-navy before:mb-1 before:block before:text-[10px] before:text-muted before:content-['قیمت_واحد'] md:text-base md:before:hidden">{new Intl.NumberFormat("fa-IR").format(item.price)} تومان</p>
           <div className="justify-self-end md:justify-self-auto"><span className="mb-1 block text-[10px] font-bold text-muted md:hidden">تعداد</span><QuantitySelector value={item.quantity} onChange={(quantity) => updateQuantity(item.id, quantity)} /></div>
           <p className="text-sm font-black text-navy before:mb-1 before:block before:text-[10px] before:text-muted before:content-['جمع_کل'] md:text-base md:before:hidden">{new Intl.NumberFormat("fa-IR").format(item.price * item.quantity)} تومان</p>
-          <button className="grid size-9 place-items-center justify-self-end rounded-lg border border-borderBlue text-navy transition hover:border-red-200 hover:bg-red-50 md:justify-self-auto" onClick={() => removeItem(item.id)} type="button">🗑</button>
+          <button
+            className="grid size-9 place-items-center justify-self-end rounded-lg border border-red-100 bg-red-50 text-[#c0262d] transition hover:border-red-200 hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-royal md:justify-self-auto"
+            onClick={() =>
+              void confirmDelete({
+                title: "از سبد خرید حذف شود؟",
+                text: item.title,
+                successTitle: "از سبد خرید حذف شد",
+                onConfirm: () => removeItem(item.id),
+              })
+            }
+            type="button"
+            aria-label={`حذف ${item.title} از سبد خرید`}
+            title="حذف"
+          >
+            <TrashIcon className="size-[18px]" />
+          </button>
         </div>
       ))}
     </section>

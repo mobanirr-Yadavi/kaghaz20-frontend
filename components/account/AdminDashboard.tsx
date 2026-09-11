@@ -8,6 +8,8 @@ import { toEnglishDigits } from "@/lib/digits";
 import type { AdminCategory, AdminProduct, AdminStats, AdminUser, Order, Profile } from "@/lib/account";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
 import { RichTextEditor } from "./RichTextEditor";
+import { RowActions } from "./RowActions";
+import { confirmDelete } from "@/lib/confirmDelete";
 
 // Shared Jalali date picker setup; portal keeps the calendar out of the wrapping <label> and card overflow.
 const jalaliPickerProps = { calendar: persian, locale: persian_fa, calendarPosition: "bottom-right", portal: true, containerStyle: { width: "100%" }, placeholder: "انتخاب تاریخ" } as const;
@@ -149,37 +151,49 @@ export function AdminDashboard({
     setCategoryForm({ name: category.name, description: category.description || "" });
   }
 
-  async function deleteProduct(id: string) {
-    if (!confirm("این محصول حذف شود؟")) return;
-    try {
-      await request<boolean>(`/Product/Delete/${id}`, { method: "DELETE" });
-      setProductRows((rows) => rows.filter((item) => item.id !== id));
-      setMessage("محصول حذف شد.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "خطا در حذف محصول");
-    }
+  function deleteProduct(product: AdminProduct) {
+    void confirmDelete({
+      title: "این محصول حذف شود؟",
+      text: `«${product.name}» برای همیشه حذف می‌شود.`,
+      successTitle: "محصول حذف شد",
+      onConfirm: async () => {
+        await request<boolean>(`/Product/Delete/${product.id}`, { method: "DELETE" });
+        setProductRows((rows) => rows.filter((item) => item.id !== product.id));
+        if (editingProductId === product.id) {
+          setEditingProductId(null);
+          setProductForm(emptyProduct);
+        }
+      },
+    });
   }
 
-  async function deleteCategory(id: string) {
-    if (!confirm("این دسته‌بندی حذف شود؟")) return;
-    try {
-      await request<boolean>(`/Category/Delete/${id}`, { method: "DELETE" });
-      setCategoryRows((rows) => rows.filter((item) => item.id !== id));
-      setMessage("دسته‌بندی حذف شد.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "خطا در حذف دسته‌بندی");
-    }
+  function deleteCategory(category: AdminCategory) {
+    void confirmDelete({
+      title: "این دسته‌بندی حذف شود؟",
+      text: `«${category.name}» برای همیشه حذف می‌شود.`,
+      successTitle: "دسته‌بندی حذف شد",
+      onConfirm: async () => {
+        await request<boolean>(`/Category/Delete/${category.id}`, { method: "DELETE" });
+        setCategoryRows((rows) => rows.filter((item) => item.id !== category.id));
+        if (editingCategoryId === category.id) {
+          setEditingCategoryId(null);
+          setCategoryForm(emptyCategory);
+        }
+      },
+    });
   }
 
-  async function deleteUser(id: string) {
-    if (!confirm("این کاربر حذف شود؟")) return;
-    try {
-      await request<boolean>(`/Admin/DeleteUser/${id}`, { method: "DELETE" });
-      setUserRows((rows) => rows.filter((item) => item.id !== id));
-      setMessage("کاربر حذف شد.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "خطا در حذف کاربر");
-    }
+  function deleteUser(user: AdminUser) {
+    const name = `${user.firstName} ${user.lastName}`.trim() || user.userName;
+    void confirmDelete({
+      title: "این کاربر حذف شود؟",
+      text: `حساب «${name}» برای همیشه حذف می‌شود.`,
+      successTitle: "کاربر حذف شد",
+      onConfirm: async () => {
+        await request<boolean>(`/Admin/DeleteUser/${user.id}`, { method: "DELETE" });
+        setUserRows((rows) => rows.filter((item) => item.id !== user.id));
+      },
+    });
   }
 
   return (
@@ -234,7 +248,7 @@ export function AdminDashboard({
                 {productRows.map((product) => (
                   <tr key={product.id}>
                     <td>{product.name}</td><td>{product.categoryName || "-"}</td><td>{money(product.price)}</td><td>{money(product.stock)}</td>
-                    <td><button type="button" onClick={() => editProduct(product)}>ویرایش</button> <button type="button" onClick={() => deleteProduct(product.id)}>حذف</button></td>
+                    <td><RowActions name={product.name} onEdit={() => editProduct(product)} onDelete={() => deleteProduct(product)} /></td>
                   </tr>
                 ))}
               </tbody></table></div>
@@ -254,7 +268,7 @@ export function AdminDashboard({
                 {categoryRows.map((category) => (
                   <tr key={category.id}>
                     <td>{category.name}</td><td>{category.description || "-"}</td>
-                    <td><button type="button" onClick={() => editCategory(category)}>ویرایش</button> <button type="button" onClick={() => deleteCategory(category.id)}>حذف</button></td>
+                    <td><RowActions name={category.name} onEdit={() => editCategory(category)} onDelete={() => deleteCategory(category)} /></td>
                   </tr>
                 ))}
               </tbody></table></div>
@@ -268,7 +282,7 @@ export function AdminDashboard({
                 {visibleCustomers.map((user) => (
                   <tr key={user.id}>
                     <td>{user.firstName} {user.lastName}</td><td>{user.userName}</td><td>{user.email}</td><td>{user.phoneNumber}</td><td>{date(user.createdAt)}</td>
-                    <td><button type="button" onClick={() => deleteUser(user.id)}>حذف</button></td>
+                    <td><RowActions name={`${user.firstName} ${user.lastName}`.trim() || user.userName} onDelete={() => deleteUser(user)} /></td>
                   </tr>
                 ))}
               </tbody></table></div>
