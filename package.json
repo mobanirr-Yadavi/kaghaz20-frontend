@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "dev:network": "next dev -H 0.0.0.0",
-  "build": "next build",
-  "start": "next start -H 127.0.0.1 -p 3000"
+    "dev": "next dev",
+    "dev:network": "next dev -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start -H 127.0.0.1 -p 3000"
   },
   "dependencies": {
     "next": "16.2.9",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-multi-date-picker": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "22.15.32",

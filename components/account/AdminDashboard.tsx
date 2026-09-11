@@ -1,8 +1,14 @@
 "use client";
 
 import { FormEvent, Fragment, useMemo, useState } from "react";
+import DatePicker, { DateObject } from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 import type { AdminCategory, AdminProduct, AdminStats, AdminUser, Order, Profile } from "@/lib/account";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
+
+// Shared Jalali date picker setup; portal keeps the calendar out of the wrapping <label> and card overflow.
+const jalaliPickerProps = { calendar: persian, locale: persian_fa, calendarPosition: "bottom-right", portal: true, containerStyle: { width: "100%" }, placeholder: "انتخاب تاریخ" } as const;
 
 type ProductForm = { name: string; description: string; price: string; stock: string; categoryId: string };
 type CategoryForm = { name: string; description: string };
@@ -62,8 +68,8 @@ export function AdminDashboard({
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [orderStatusFilter, setOrderStatusFilter] = useState("all");
-  const [orderFromDate, setOrderFromDate] = useState("");
-  const [orderToDate, setOrderToDate] = useState("");
+  const [orderFromDate, setOrderFromDate] = useState<DateObject | null>(null);
+  const [orderToDate, setOrderToDate] = useState<DateObject | null>(null);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const firstCategoryId = categoryRows[0]?.id || "";
   const emptyProduct = useMemo<ProductForm>(() => ({ name: "", description: "", price: "", stock: "", categoryId: firstCategoryId }), [firstCategoryId]);
@@ -74,12 +80,12 @@ export function AdminDashboard({
   const recentCustomers = [...customers].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const recentOrders = [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const paidOrders = recentOrders.filter((order) => order.status.toLowerCase() === "paid");
+  const orderFromTime = orderFromDate ? orderFromDate.toDate().setHours(0, 0, 0, 0) : -Infinity;
+  const orderToTime = orderToDate ? orderToDate.toDate().setHours(23, 59, 59, 999) : Infinity;
   const filteredOrders = recentOrders.filter((order) => {
     const statusMatches = orderStatusFilter === "all" || order.status.toLowerCase() === orderStatusFilter.toLowerCase();
     const createdAt = new Date(order.createdAt).getTime();
-    const fromMatches = !orderFromDate || createdAt >= new Date(`${orderFromDate}T00:00:00`).getTime();
-    const toMatches = !orderToDate || createdAt <= new Date(`${orderToDate}T23:59:59.999`).getTime();
-    return statusMatches && fromMatches && toMatches;
+    return statusMatches && createdAt >= orderFromTime && createdAt <= orderToTime;
   });
   const visibleCustomers = view === "overview" ? recentCustomers.slice(0, 5) : recentCustomers;
   const visibleOrders = view === "overview" ? paidOrders.slice(0, 5) : filteredOrders;
@@ -272,9 +278,9 @@ export function AdminDashboard({
             {view === "orders" ? (
               <div className="order-filters">
                 <label><span>وضعیت سفارش</span><select value={orderStatusFilter} onChange={(event) => setOrderStatusFilter(event.target.value)}><option value="all">همه وضعیت‌ها</option><option value="Paid">فقط پرداخت‌شده‌ها</option><option value="Pending">در انتظار پرداخت</option><option value="Processing">در حال پردازش</option><option value="Shipped">ارسال‌شده</option><option value="Delivered">تحویل‌شده</option><option value="Cancelled">لغوشده</option></select></label>
-                <label><span>از تاریخ</span><input type="date" value={orderFromDate} onChange={(event) => setOrderFromDate(event.target.value)} /></label>
-                <label><span>تا تاریخ</span><input type="date" value={orderToDate} onChange={(event) => setOrderToDate(event.target.value)} /></label>
-                <button type="button" onClick={() => { setOrderStatusFilter("all"); setOrderFromDate(""); setOrderToDate(""); }}>پاک‌کردن فیلترها</button>
+                <label><span>از تاریخ</span><DatePicker {...jalaliPickerProps} value={orderFromDate} maxDate={orderToDate ?? undefined} onChange={(value) => setOrderFromDate(value instanceof DateObject ? value : null)} /></label>
+                <label><span>تا تاریخ</span><DatePicker {...jalaliPickerProps} value={orderToDate} minDate={orderFromDate ?? undefined} onChange={(value) => setOrderToDate(value instanceof DateObject ? value : null)} /></label>
+                <button type="button" onClick={() => { setOrderStatusFilter("all"); setOrderFromDate(null); setOrderToDate(null); }}>پاک‌کردن فیلترها</button>
               </div>
             ) : null}
             {visibleOrders.length ? (
