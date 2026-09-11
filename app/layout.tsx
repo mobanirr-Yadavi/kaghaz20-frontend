@@ -5,6 +5,7 @@ import { PageTransitionLoader } from "@/components/loading/PageTransitionLoader"
 import { CartProvider } from "@/components/cart/CartProvider";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 import Script from "next/script";
 
@@ -18,7 +19,7 @@ const shareDescription =
 // Link previews (Telegram, WhatsApp, X, ...) use these tags. The preview image
 // comes from app/opengraph-image.jpg; metadataBase turns it into an absolute URL.
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.kaghaz20.ir"),
+  metadataBase: new URL(SITE_URL),
   title: { default: siteTitle, template: `%s | ${siteName}` },
   description: siteDescription,
   applicationName: siteName,
