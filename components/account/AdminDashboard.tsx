@@ -87,7 +87,7 @@ const viewTitles: Record<AdminView, { title: string; description: string }> = {
 };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await backendFetch(`/api/v1${path}`, {
+  const response = await backendFetch(`/api-v1${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
   });
@@ -183,6 +183,13 @@ export function AdminDashboard({
   async function submitProduct(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
+    // The backend caps the description at 1000 characters (HTML tags included).
+    if (productForm.description.length > 1000) {
+      setMessage(
+        `توضیحات محصول (همراه با قالب‌بندی) حداکثر ۱۰۰۰ کاراکتر است؛ الان ${money(productForm.description.length)} کاراکتر است.`,
+      );
+      return;
+    }
     const body = {
       name: productForm.name,
       description: productForm.description || null,

@@ -6,6 +6,7 @@ import { CartSummary } from "@/components/cart/CartSummary";
 import { CartTable } from "@/components/cart/CartTable";
 import { isMobile, mobileOnInput, normalizeMobile } from "@/lib/digits";
 import { backendFetch } from "@/lib/backend";
+import { clearAuthToken } from "@/lib/authToken";
 
 async function post(path: string, body: object) {
   const response = await backendFetch(path, {
@@ -19,15 +20,14 @@ async function post(path: string, body: object) {
   const payload = await response.json().catch(() => null);
 
   if (response.status === 401) {
+    clearAuthToken();
     window.location.assign("/login");
     throw new Error("برای ثبت سفارش ابتدا وارد حساب کاربری شوید.");
   }
 
   if (!response.ok) {
     throw new Error(
-      payload?.message ||
-        payload?.title ||
-        "ثبت سفارش انجام نشد.",
+      payload?.message || payload?.title || "ثبت سفارش انجام نشد.",
     );
   }
 
@@ -35,25 +35,17 @@ async function post(path: string, body: object) {
 }
 
 export function CartPageClient() {
-  const {
-    items,
-    hydrated,
-    updateQuantity,
-    removeItem,
-  } = useCart();
+  const { items, hydrated, updateQuantity, removeItem } = useCart();
 
   const [checkout, setCheckout] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const [shippingMethod, setShippingMethod] =
-    useState<"express" | "tipax">("express");
+  const [shippingMethod, setShippingMethod] = useState<"express" | "tipax">(
+    "express",
+  );
 
   const subtotal = useMemo(
-    () =>
-      items.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-      ),
+    () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [items],
   );
 
@@ -61,41 +53,32 @@ export function CartPageClient() {
     setCheckout(true);
 
     requestAnimationFrame(() => {
-      document
-        .getElementById("checkout-form")
-        ?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+      document.getElementById("checkout-form")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     });
   };
 
-  const submitOrder = async (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
+  const submitOrder = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const form = new FormData(event.currentTarget);
 
-    const receiverFullName = String(
-      form.get("receiverFullName") || "",
-    ).trim();
+    const receiverFullName = String(form.get("receiverFullName") || "").trim();
 
     const receiverPhoneNumber = normalizeMobile(
       String(form.get("receiverPhoneNumber") || ""),
     );
 
-    const address = String(
-      form.get("shippingAddress") || "",
-    ).trim();
+    const address = String(form.get("shippingAddress") || "").trim();
 
     const shippingLabels = {
       express: "ارسال سریع با پیک موتوری (مخصوص تهران)",
       tipax: "ارسال با تیپاکس",
     };
 
-    const shippingAddress =
-      `[نحوه ارسال: ${shippingLabels[shippingMethod]}]\n${address}`;
+    const shippingAddress = `[نحوه ارسال: ${shippingLabels[shippingMethod]}]\n${address}`;
 
     if (!receiverFullName) {
       setError("نام گیرنده را وارد کنید.");
@@ -103,9 +86,7 @@ export function CartPageClient() {
     }
 
     if (!isMobile(receiverPhoneNumber)) {
-      setError(
-        "شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.",
-      );
+      setError("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
       return;
     }
 
@@ -118,38 +99,28 @@ export function CartPageClient() {
     setError("");
 
     try {
-      const order = await post(
-        "/api/v1/Order/CreateOrder",
-        {
-          receiverFullName,
-          receiverPhoneNumber,
-          shippingAddress,
-          items: items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-          })),
-        },
-      );
+      const order = await post("/api-v1/Order/CreateOrder", {
+        receiverFullName,
+        receiverPhoneNumber,
+        shippingAddress,
+        items: items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      });
 
       const orderId = order?.id ?? order?.orderId;
 
       if (!orderId) {
-        throw new Error(
-          "شناسه سفارش از سرور دریافت نشد.",
-        );
+        throw new Error("شناسه سفارش از سرور دریافت نشد.");
       }
 
-      const payment = await post(
-        "/api/v1/Payment/Request",
-        {
-          orderId,
-        },
-      );
+      const payment = await post("/api-v1/Payment/Request", {
+        orderId,
+      });
 
       if (!payment?.paymentUrl || !payment?.refId) {
-        throw new Error(
-          "اطلاعات اتصال به درگاه کامل دریافت نشد.",
-        );
+        throw new Error("اطلاعات اتصال به درگاه کامل دریافت نشد.");
       }
 
       const bankForm = document.createElement("form");
@@ -166,9 +137,7 @@ export function CartPageClient() {
       bankForm.submit();
     } catch (reason) {
       setError(
-        reason instanceof Error
-          ? reason.message
-          : "خطای پیش‌بینی‌نشده رخ داد.",
+        reason instanceof Error ? reason.message : "خطای پیش‌بینی‌نشده رخ داد.",
       );
 
       setProcessing(false);
@@ -221,13 +190,10 @@ export function CartPageClient() {
         />
 
         <div className="rounded-xl bg-white p-5 text-center shadow-card">
-          <p className="font-black text-buttonGold">
-            خریدی امن و مطمئن
-          </p>
+          <p className="font-black text-buttonGold">خریدی امن و مطمئن</p>
 
           <p className="mt-2 text-xs font-semibold text-muted">
-            مبلغ نهایی سفارش از قیمت ثبت‌شده در سرور محاسبه
-            می‌شود.
+            مبلغ نهایی سفارش از قیمت ثبت‌شده در سرور محاسبه می‌شود.
           </p>
         </div>
       </div>
@@ -250,8 +216,7 @@ export function CartPageClient() {
             </h2>
 
             <p className="mt-1 text-xs font-semibold text-muted">
-              پس از ثبت سفارش به درگاه امن بانک ملت منتقل
-              می‌شوید.
+              پس از ثبت سفارش به درگاه امن بانک ملت منتقل می‌شوید.
             </p>
 
             <fieldset className="mt-5">
@@ -273,9 +238,7 @@ export function CartPageClient() {
                       name="shippingMethod"
                       value="express"
                       checked={shippingMethod === "express"}
-                      onChange={() =>
-                        setShippingMethod("express")
-                      }
+                      onChange={() => setShippingMethod("express")}
                       className="size-5 shrink-0 accent-[#063bb9]"
                     />
 
@@ -325,10 +288,7 @@ export function CartPageClient() {
                           strokeLinejoin="round"
                         />
 
-                        <path
-                          d="M39 27H49L54 34H43L39 27Z"
-                          fill="#FFBE32"
-                        />
+                        <path d="M39 27H49L54 34H43L39 27Z" fill="#FFBE32" />
 
                         <path
                           d="M44 26L48 17"
@@ -396,9 +356,7 @@ export function CartPageClient() {
                       name="shippingMethod"
                       value="tipax"
                       checked={shippingMethod === "tipax"}
-                      onChange={() =>
-                        setShippingMethod("tipax")
-                      }
+                      onChange={() => setShippingMethod("tipax")}
                       className="size-5 shrink-0 accent-[#063bb9]"
                     />
 
@@ -435,7 +393,6 @@ export function CartPageClient() {
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <label className="text-sm font-black">
                 نام گیرنده
-
                 <input
                   name="receiverFullName"
                   required
@@ -446,7 +403,6 @@ export function CartPageClient() {
 
               <label className="text-sm font-black">
                 شماره موبایل
-
                 <input
                   name="receiverPhoneNumber"
                   required
@@ -461,7 +417,6 @@ export function CartPageClient() {
 
               <label className="text-sm font-black sm:col-span-2">
                 آدرس
-
                 <textarea
                   name="shippingAddress"
                   required

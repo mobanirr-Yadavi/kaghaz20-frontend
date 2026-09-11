@@ -2,16 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import {
-  FormEvent,
-  KeyboardEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { isMobile, mobileOnInput, normalizeMobile, toEnglishDigits } from "@/lib/digits";
+  isMobile,
+  mobileOnInput,
+  normalizeMobile,
+  toEnglishDigits,
+} from "@/lib/digits";
 import { CooldownButton } from "./CooldownButton";
 import { backendFetch } from "@/lib/backend";
+import { rememberAuthToken } from "@/lib/authToken";
 
 type Method = "mobile" | "email";
 type OtpState = "idle" | "checking" | "valid" | "invalid";
@@ -48,7 +48,9 @@ const otpSentKey = (mobile: string) => `kaghaz20-otp-sent-${mobile}`;
 function otpSecondsLeft(mobile: string) {
   try {
     const sentAt = Number(window.localStorage.getItem(otpSentKey(mobile)));
-    const left = Math.ceil((sentAt + OTP_COOLDOWN_SECONDS * 1000 - Date.now()) / 1000);
+    const left = Math.ceil(
+      (sentAt + OTP_COOLDOWN_SECONDS * 1000 - Date.now()) / 1000,
+    );
     if (sentAt && left <= 0) window.localStorage.removeItem(otpSentKey(mobile));
     return sentAt ? Math.max(0, left) : 0;
   } catch {
@@ -78,15 +80,13 @@ const faTwoDigits = new Intl.NumberFormat("fa-IR", { minimumIntegerDigits: 2 });
 const formatCountdown = (seconds: number) =>
   `${faNumber.format(Math.floor(seconds / 60))}:${faTwoDigits.format(seconds % 60)}`;
 
-export function AuthPage({
-  mode,
-}: {
-  mode: "login" | "register";
-}) {
+export function AuthPage({ mode }: { mode: "login" | "register" }) {
   const register = mode === "register";
 
   const [method, setMethod] = useState<Method>("mobile");
-  const [mobileStep, setMobileStep] = useState<"phone" | "otp" | "profile">("phone");
+  const [mobileStep, setMobileStep] = useState<"phone" | "otp" | "profile">(
+    "phone",
+  );
   const [phone, setPhone] = useState("");
   const [registrationToken, setRegistrationToken] = useState("");
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
@@ -98,7 +98,10 @@ export function AuthPage({
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [otpCooldown, setOtpCooldown] = useState(0);
   // 0 → 1 over the 2-minute wait; drives the fill on the send/resend buttons.
-  const cooldownProgress = otpCooldown > 0 ? (OTP_COOLDOWN_SECONDS - otpCooldown) / OTP_COOLDOWN_SECONDS : null;
+  const cooldownProgress =
+    otpCooldown > 0
+      ? (OTP_COOLDOWN_SECONDS - otpCooldown) / OTP_COOLDOWN_SECONDS
+      : null;
 
   useEffect(() => {
     if (!isMobile(phone)) {
@@ -148,9 +151,7 @@ export function AuthPage({
       return true;
     } catch (reason) {
       setError(
-        reason instanceof Error
-          ? reason.message
-          : "خطای پیش‌بینی‌نشده رخ داد.",
+        reason instanceof Error ? reason.message : "خطای پیش‌بینی‌نشده رخ داد.",
       );
 
       return false;
@@ -208,14 +209,14 @@ export function AuthPage({
       }
 
       const registered = await run(() =>
-        request("/api/v1/Auth/Register", {
+        request("/api-v1/Auth/Register", {
           firstName: data.firstName.trim(),
           lastName: data.lastName.trim(),
           userName: data.userName.trim(),
           email,
           phoneNumber,
           password: data.password,
-        }),
+        }).then(rememberAuthToken),
       );
 
       if (registered) {
@@ -239,10 +240,10 @@ export function AuthPage({
     }
 
     const loggedIn = await run(() =>
-      request("/api/v1/Auth/Login", {
+      request("/api-v1/Auth/Login", {
         email,
         password,
-      }),
+      }).then(rememberAuthToken),
     );
 
     if (loggedIn) {
@@ -264,7 +265,7 @@ export function AuthPage({
     }
 
     const sent = await run(() =>
-      request("/api/v1/Auth/SendOtp", {
+      request("/api-v1/Auth/SendOtp", {
         mobileNo: phone,
       }),
     );
@@ -302,11 +303,13 @@ export function AuthPage({
     setError("");
 
     try {
-      const payload = await request("/api/v1/Auth/VerifyOtp", {
+      const payload = await request("/api-v1/Auth/VerifyOtp", {
         mobile: phone,
         code,
       });
       const data = payload?.data;
+      // Stores data.accessToken; a registrationToken alone is not a login token.
+      rememberAuthToken(payload);
 
       setOtpState("valid");
       clearOtpSent(phone);
@@ -325,9 +328,7 @@ export function AuthPage({
     } catch (reason) {
       setOtpState("invalid");
       setError(
-        reason instanceof Error
-          ? reason.message
-          : "کد واردشده معتبر نیست.",
+        reason instanceof Error ? reason.message : "کد واردشده معتبر نیست.",
       );
     } finally {
       setLoading(false);
@@ -349,12 +350,13 @@ export function AuthPage({
     }
 
     const completed = await run(() =>
-      request("/api/v1/Auth/CompleteRegistration", {
+      request("/api-v1/Auth/CompleteRegistration", {
         registrationToken,
         firstName,
         lastName,
-        email,
-      }),
+        // Optional; the backend rejects "" as an invalid email, so omit it when empty.
+        ...(email ? { email } : {}),
+      }).then(rememberAuthToken),
     );
 
     if (completed) {
@@ -394,9 +396,7 @@ export function AuthPage({
         : digits;
 
     setOtp((current) =>
-      current.map((item, position) =>
-        position === index ? digit : item,
-      ),
+      current.map((item, position) => (position === index ? digit : item)),
     );
 
     if (digit) {
@@ -404,10 +404,7 @@ export function AuthPage({
     }
   };
 
-  const otpKey = (
-    event: KeyboardEvent<HTMLInputElement>,
-    index: number,
-  ) => {
+  const otpKey = (event: KeyboardEvent<HTMLInputElement>, index: number) => {
     if (event.key === "Backspace" && !otp[index]) {
       otpRefs.current[index - 1]?.focus();
     }
@@ -416,9 +413,7 @@ export function AuthPage({
   return (
     <main className="auth-shell">
       <section
-        className={`auth-simple-card ${
-          register ? "auth-register-card" : ""
-        }`}
+        className={`auth-simple-card ${register ? "auth-register-card" : ""}`}
       >
         <Link href="/">
           <Image
@@ -431,9 +426,7 @@ export function AuthPage({
           />
         </Link>
 
-        <h1>
-          {register ? "ساخت حساب کاربری" : "ورود به حساب کاربری"}
-        </h1>
+        <h1>{register ? "ساخت حساب کاربری" : "ورود به حساب کاربری"}</h1>
 
         <p>
           {register
@@ -442,11 +435,7 @@ export function AuthPage({
         </p>
 
         {!register && (
-          <div
-            className="auth-methods"
-            role="tablist"
-            aria-label="روش ورود"
-          >
+          <div className="auth-methods" role="tablist" aria-label="روش ورود">
             <button
               aria-selected={method === "mobile"}
               className={method === "mobile" ? "active" : ""}
@@ -494,11 +483,7 @@ export function AuthPage({
 
             <label>
               نام کاربری
-              <input
-                name="userName"
-                autoComplete="username"
-                dir="ltr"
-              />
+              <input name="userName" autoComplete="username" dir="ltr" />
             </label>
 
             <label>
@@ -546,11 +531,7 @@ export function AuthPage({
             </button>
           </form>
         ) : method === "email" ? (
-          <form
-            className="auth-simple-form"
-            onSubmit={submitMain}
-            noValidate
-          >
+          <form className="auth-simple-form" onSubmit={submitMain} noValidate>
             <label>
               ایمیل
               <input
@@ -563,10 +544,7 @@ export function AuthPage({
               />
             </label>
 
-            <PasswordField
-              show={showPassword}
-              setShow={setShowPassword}
-            />
+            <PasswordField show={showPassword} setShow={setShowPassword} />
 
             {error && (
               <p className="auth-error" role="alert">
@@ -583,19 +561,13 @@ export function AuthPage({
             </button>
           </form>
         ) : mobileStep === "phone" ? (
-          <form
-            className="auth-simple-form"
-            onSubmit={sendOtp}
-            noValidate
-          >
+          <form className="auth-simple-form" onSubmit={sendOtp} noValidate>
             <label>
               شماره موبایل
               <input
                 value={phone}
                 onChange={(event) =>
-                  setPhone(
-                    normalizeMobile(event.target.value).slice(0, 11),
-                  )
+                  setPhone(normalizeMobile(event.target.value).slice(0, 11))
                 }
                 type="tel"
                 inputMode="tel"
@@ -625,18 +597,12 @@ export function AuthPage({
             </CooldownButton>
           </form>
         ) : mobileStep === "otp" ? (
-          <form
-            className="auth-simple-form"
-            onSubmit={verifyOtp}
-          >
+          <form className="auth-simple-form" onSubmit={verifyOtp}>
             <p className="otp-hint">
               کد ارسال‌شده به <b dir="ltr">{phone}</b> را وارد کنید.
             </p>
 
-            <div
-              className={`otp-boxes ${otpState}`}
-              dir="ltr"
-            >
+            <div className={`otp-boxes ${otpState}`} dir="ltr">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -644,17 +610,13 @@ export function AuthPage({
                     otpRefs.current[index] = element;
                   }}
                   value={digit}
-                  onChange={(event) =>
-                    updateOtp(index, event.target.value)
-                  }
+                  onChange={(event) => updateOtp(index, event.target.value)}
                   onKeyDown={(event) => otpKey(event, index)}
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={otp.length}
-                  autoComplete={
-                    index === 0 ? "one-time-code" : "off"
-                  }
+                  autoComplete={index === 0 ? "one-time-code" : "off"}
                   aria-label={`رقم ${index + 1} کد`}
                 />
               ))}
@@ -747,9 +709,7 @@ export function AuthPage({
         )}
 
         <div className="auth-switch-simple">
-          {register
-            ? "قبلاً حساب ساخته‌اید؟"
-            : "حساب کاربری ندارید؟"}{" "}
+          {register ? "قبلاً حساب ساخته‌اید؟" : "حساب کاربری ندارید؟"}{" "}
           <Link href={register ? "/login" : "/register"}>
             {register ? "وارد شوید" : "ثبت‌نام کنید"}
           </Link>
@@ -775,20 +735,14 @@ function PasswordField({
   return (
     <label>
       رمز عبور
-
       <div className="password-field">
         <input
           name="password"
           type={show ? "text" : "password"}
-          autoComplete={
-            register ? "new-password" : "current-password"
-          }
+          autoComplete={register ? "new-password" : "current-password"}
         />
 
-        <button
-          onClick={() => setShow(!show)}
-          type="button"
-        >
+        <button onClick={() => setShow(!show)} type="button">
           {show ? "پنهان" : "نمایش"}
         </button>
       </div>

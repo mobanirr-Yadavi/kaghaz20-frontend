@@ -1,19 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { backendFetch } from "@/lib/backend";
+import { clearAuthToken } from "@/lib/authToken";
 
 export function LogoutButton() {
   const [loading, setLoading] = useState(false);
 
   async function logout() {
     setLoading(true);
-    try {
-      // The backend clears the HttpOnly paper_token cookie (JS can't).
-      await backendFetch("/api/v1/Auth/Logout", { method: "POST" });
-    } finally {
-      window.location.replace("/login");
-    }
+    // The backend has no logout endpoint (stateless JWT); dropping the token logs out.
+    clearAuthToken();
+    window.location.replace("/login");
   }
 
   return (

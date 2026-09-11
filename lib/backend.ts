@@ -1,11 +1,19 @@
 import { SITE_URL } from "@/lib/site";
+import { getAuthToken } from "@/lib/authToken";
 
-// The browser talks to the ASP.NET backend directly (there is no Next.js proxy).
-// Login state is an HttpOnly cookie (paper_token) that the backend sets and reads,
-// so every call sends credentials. Set NEXT_PUBLIC_API_URL to point elsewhere.
-const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || SITE_URL).replace(/\/$/, "");
+// The browser calls the ASP.NET backend directly; Next.js has no backend of its own.
+// NEXT_PUBLIC_API_URL must be the backend's public address (without /api-v1).
+const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || SITE_URL).replace(
+  /\/$/,
+  "",
+);
 
-// path is the backend route, e.g. "/api/v1/Auth/Login".
+// path is the backend route, e.g. "/api-v1/Auth/Login". Sends the JWT as
+// "Authorization: Bearer", which is what the backend expects.
 export function backendFetch(path: string, init: RequestInit = {}) {
-  return fetch(`${BACKEND_URL}${path}`, { ...init, credentials: "include" });
+  const headers = new Headers(init.headers);
+  const token = getAuthToken();
+  if (token && !headers.has("Authorization"))
+    headers.set("Authorization", `Bearer ${token}`);
+  return fetch(`${BACKEND_URL}${path}`, { ...init, headers });
 }
