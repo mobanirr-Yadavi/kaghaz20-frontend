@@ -11,12 +11,13 @@ import {
 } from "react";
 import { isMobile, mobileOnInput, normalizeMobile, toEnglishDigits } from "@/lib/digits";
 import { CooldownButton } from "./CooldownButton";
+import { backendFetch } from "@/lib/backend";
 
 type Method = "mobile" | "email";
 type OtpState = "idle" | "checking" | "valid" | "invalid";
 
 async function request(path: string, body: Record<string, string>) {
-  const response = await fetch(path, {
+  const response = await backendFetch(path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

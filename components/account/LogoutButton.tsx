@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { backendFetch } from "@/lib/backend";
 
 export function LogoutButton() {
   const [loading, setLoading] = useState(false);
@@ -8,7 +9,8 @@ export function LogoutButton() {
   async function logout() {
     setLoading(true);
     try {
-      await fetch("/api/v1/auth/logout", { method: "POST" });
+      // The backend clears the HttpOnly paper_token cookie (JS can't).
+      await backendFetch("/api/v1/Auth/Logout", { method: "POST" });
     } finally {
       window.location.replace("/login");
     }

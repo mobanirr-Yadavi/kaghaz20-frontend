@@ -5,6 +5,7 @@ import DatePicker, { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { toEnglishDigits } from "@/lib/digits";
+import { backendFetch } from "@/lib/backend";
 import type {
   AdminCategory,
   AdminProduct,
@@ -86,7 +87,7 @@ const viewTitles: Record<AdminView, { title: string; description: string }> = {
 };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api/v1${path}`, {
+  const response = await backendFetch(`/api/v1${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
   });

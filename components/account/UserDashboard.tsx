@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import type { Order, Profile } from "@/lib/account";
 import { isMobile, normalizeMobile } from "@/lib/digits";
+import { backendFetch } from "@/lib/backend";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
 
 const statusLabel: Record<string, string> = {
@@ -31,7 +32,7 @@ const total = paidOrders
       setMessage("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
       return;
     }
-    const response = await fetch("/api/v1/Profile/UpdateProfile", {
+    const response = await backendFetch("/api/v1/Profile/UpdateProfile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

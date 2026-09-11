@@ -5,9 +5,10 @@ import { useCart } from "@/components/cart/CartProvider";
 import { CartSummary } from "@/components/cart/CartSummary";
 import { CartTable } from "@/components/cart/CartTable";
 import { isMobile, mobileOnInput, normalizeMobile } from "@/lib/digits";
+import { backendFetch } from "@/lib/backend";
 
 async function post(path: string, body: object) {
-  const response = await fetch(path, {
+  const response = await backendFetch(path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
