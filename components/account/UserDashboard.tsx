@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import type { Order, Profile } from "@/lib/account";
+import { isMobile, normalizeMobile } from "@/lib/digits";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
 
 const statusLabel: Record<string, string> = {
@@ -25,6 +26,11 @@ const total = paidOrders
   async function submitProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
+    const phoneNumber = normalizeMobile(currentProfile.phoneNumber || "");
+    if (!isMobile(phoneNumber)) {
+      setMessage("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
+      return;
+    }
     const response = await fetch("/api/v1/Profile/UpdateProfile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -32,7 +38,7 @@ const total = paidOrders
         firstName: currentProfile.firstName,
         lastName: currentProfile.lastName,
         userName: currentProfile.userName,
-        phoneNumber: currentProfile.phoneNumber,
+        phoneNumber,
       }),
     });
     const payload = (await response.json()) as ApiResponse<Profile>;
@@ -83,7 +89,7 @@ const total = paidOrders
                 <input required placeholder="نام" value={currentProfile.firstName} onChange={(e) => setCurrentProfile({ ...currentProfile, firstName: e.target.value })} />
                 <input required placeholder="نام خانوادگی" value={currentProfile.lastName} onChange={(e) => setCurrentProfile({ ...currentProfile, lastName: e.target.value })} />
                 <input required placeholder="نام کاربری" value={currentProfile.userName} onChange={(e) => setCurrentProfile({ ...currentProfile, userName: e.target.value })} />
-                <input required placeholder="موبایل" value={currentProfile.phoneNumber} onChange={(e) => setCurrentProfile({ ...currentProfile, phoneNumber: e.target.value })} />
+                <input required inputMode="tel" placeholder="موبایل" value={currentProfile.phoneNumber} onChange={(e) => setCurrentProfile({ ...currentProfile, phoneNumber: normalizeMobile(e.target.value).slice(0, 11) })} />
                 <button type="submit">ذخیره پروفایل</button>
               </form>
             </section>

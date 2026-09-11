@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 import { CartSummary } from "@/components/cart/CartSummary";
 import { CartTable } from "@/components/cart/CartTable";
+import { isMobile, mobileOnInput, normalizeMobile } from "@/lib/digits";
 
 async function post(path: string, body: object) {
   const response = await fetch(path, {
@@ -79,9 +80,9 @@ export function CartPageClient() {
       form.get("receiverFullName") || "",
     ).trim();
 
-    const receiverPhoneNumber = String(
-      form.get("receiverPhoneNumber") || "",
-    ).trim();
+    const receiverPhoneNumber = normalizeMobile(
+      String(form.get("receiverPhoneNumber") || ""),
+    );
 
     const address = String(
       form.get("shippingAddress") || "",
@@ -100,7 +101,7 @@ export function CartPageClient() {
       return;
     }
 
-    if (!/^09\d{9}$/.test(receiverPhoneNumber)) {
+    if (!isMobile(receiverPhoneNumber)) {
       setError(
         "شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.",
       );
@@ -449,6 +450,7 @@ export function CartPageClient() {
                   name="receiverPhoneNumber"
                   required
                   inputMode="numeric"
+                  onInput={mobileOnInput}
                   autoComplete="tel"
                   dir="ltr"
                   placeholder="09123456789"

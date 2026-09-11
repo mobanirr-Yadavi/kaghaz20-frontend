@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { isMobile, mobileOnInput, normalizeMobile, toEnglishDigits } from "@/lib/digits";
 
 type Method = "mobile" | "email";
 type OtpState = "idle" | "checking" | "valid" | "invalid";
@@ -123,12 +124,15 @@ export function AuthPage({
         return;
       }
 
-      if (!/^\S+@\S+\.\S+$/.test(data.email.trim())) {
+      const email = toEnglishDigits(data.email.trim());
+      const phoneNumber = normalizeMobile(data.phoneNumber);
+
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
         setError("فرمت ایمیل صحیح نیست.");
         return;
       }
 
-      if (!/^09\d{9}$/.test(data.phoneNumber.trim())) {
+      if (!isMobile(phoneNumber)) {
         setError("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
         return;
       }
@@ -151,8 +155,8 @@ export function AuthPage({
           firstName: data.firstName.trim(),
           lastName: data.lastName.trim(),
           userName: data.userName.trim(),
-          email: data.email.trim(),
-          phoneNumber: data.phoneNumber.trim(),
+          email,
+          phoneNumber,
           password: data.password,
         }),
       );
@@ -164,7 +168,7 @@ export function AuthPage({
       return;
     }
 
-    const email = data.email?.trim() ?? "";
+    const email = toEnglishDigits(data.email?.trim() ?? "");
     const password = data.password ?? "";
 
     if (!/^\S+@\S+\.\S+$/.test(email)) {
@@ -192,7 +196,7 @@ export function AuthPage({
   const sendOtp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!/^09\d{9}$/.test(phone)) {
+    if (!isMobile(phone)) {
       setError("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
       return;
     }
@@ -266,7 +270,7 @@ export function AuthPage({
     const form = new FormData(event.currentTarget);
     const firstName = String(form.get("firstName") || "").trim();
     const lastName = String(form.get("lastName") || "").trim();
-    const email = String(form.get("email") || "").trim();
+    const email = toEnglishDigits(String(form.get("email") || "").trim());
 
     if (!firstName || !lastName) {
       setError("نام و نام خانوادگی را کامل وارد کنید.");
@@ -288,7 +292,7 @@ export function AuthPage({
   };
 
   const updateOtp = (index: number, value: string) => {
-    const digits = value.replace(/\D/g, "");
+    const digits = toEnglishDigits(value).replace(/\D/g, "");
 
     setOtpState("idle");
 
@@ -441,6 +445,7 @@ export function AuthPage({
               شماره موبایل
               <input
                 name="phoneNumber"
+                onInput={mobileOnInput}
                 type="tel"
                 inputMode="tel"
                 autoComplete="tel"
@@ -518,7 +523,7 @@ export function AuthPage({
                 value={phone}
                 onChange={(event) =>
                   setPhone(
-                    event.target.value.replace(/\D/g, "").slice(0, 11),
+                    normalizeMobile(event.target.value).slice(0, 11),
                   )
                 }
                 type="tel"

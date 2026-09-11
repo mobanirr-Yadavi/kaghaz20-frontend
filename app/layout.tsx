@@ -4,6 +4,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { PageTransitionLoader } from "@/components/loading/PageTransitionLoader";
 import { CartProvider } from "@/components/cart/CartProvider";
 import "./globals.css";
+import Script from "next/script";
 
 const siteName = "کاغذ ۲۰";
 const siteTitle = "کاغذ ۲۰ | فروش کاغذ Double A";
@@ -53,13 +54,42 @@ export default function RootLayout({
     <html lang="fa" dir="rtl">
       <body>
         <CartProvider>
-          
           <PageTransitionLoader />
           {children}
           <Suspense fallback={null}>
             <MobileBottomNav />
           </Suspense>
         </CartProvider>
+        <Script
+          id="goftino-widget"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              !function(){
+                var i="aLs1bA",
+                    a=window,
+                    d=document;
+
+                function g(){
+                  var g=d.createElement("script"),
+                      s="https://www.goftino.com/widget/"+i,
+                      l=localStorage.getItem("goftino_"+i);
+
+                  g.async=!0;
+                  g.src=l?s+"?o="+l:s;
+
+                  d.getElementsByTagName("head")[0].appendChild(g);
+                }
+
+                "complete"===d.readyState
+                  ? g()
+                  : a.attachEvent
+                    ? a.attachEvent("onload",g)
+                    : a.addEventListener("load",g,!1);
+              }();
+            `,
+          }}
+        />
       </body>
     </html>
   );

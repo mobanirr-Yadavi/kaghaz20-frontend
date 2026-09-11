@@ -4,6 +4,7 @@ import { FormEvent, Fragment, useMemo, useState } from "react";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
+import { toEnglishDigits } from "@/lib/digits";
 import type { AdminCategory, AdminProduct, AdminStats, AdminUser, Order, Profile } from "@/lib/account";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
 
@@ -218,8 +219,8 @@ export function AdminDashboard({
             <form className="admin-form" onSubmit={submitProduct}>
               <input required placeholder="نام محصول" value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} />
               <input placeholder="توضیحات" value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} />
-              <input required min="0" type="number" placeholder="قیمت" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} />
-              <input required min="0" type="number" placeholder="تعداد" value={productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })} />
+              <input required inputMode="numeric" placeholder="قیمت" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: toEnglishDigits(e.target.value).replace(/\D/g, "") })} />
+              <input required inputMode="numeric" placeholder="تعداد" value={productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: toEnglishDigits(e.target.value).replace(/\D/g, "") })} />
               <select required value={productForm.categoryId} onChange={(e) => setProductForm({ ...productForm, categoryId: e.target.value })}>
                 <option value="">انتخاب دسته‌بندی</option>
                 {categoryRows.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
