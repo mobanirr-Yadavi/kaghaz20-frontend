@@ -99,7 +99,7 @@ export function CartPageClient() {
     setError("");
 
     try {
-      const order = await post("/api-v1/Order/CreateOrder", {
+      const order = await post("/Order/CreateOrder", {
         receiverFullName,
         receiverPhoneNumber,
         shippingAddress,
@@ -115,7 +115,7 @@ export function CartPageClient() {
         throw new Error("شناسه سفارش از سرور دریافت نشد.");
       }
 
-      const payment = await post("/api-v1/Payment/Request", {
+      const payment = await post("/Payment/Request", {
         orderId,
       });
 

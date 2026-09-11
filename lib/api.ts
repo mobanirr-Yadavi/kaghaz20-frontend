@@ -79,11 +79,11 @@ function mapProduct(item: ApiProduct): Product {
 }
 
 export async function getProducts(): Promise<Product[]> {
-  return (await apiGet<ApiProduct[]>("/api-v1/Product/GetAll")).map(mapProduct);
+  return (await apiGet<ApiProduct[]>("/Product/GetAll")).map(mapProduct);
 }
 
 export async function getCategories(): Promise<Category[]> {
-  return (await apiGet<ApiCategory[]>("/api-v1/Category/GetAll")).map(
+  return (await apiGet<ApiCategory[]>("/Category/GetAll")).map(
     (item) => ({
       id: item.id,
       title: item.name,

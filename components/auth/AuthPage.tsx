@@ -24,10 +24,8 @@ async function request(path: string, body: Record<string, string>) {
     },
     body: JSON.stringify(body),
   });
-
   const payload = await response.json().catch(() => null);
 
-  // The backend can answer 200 with { isSuccess: false }; treat that as a failure too.
   if (!response.ok || payload?.isSuccess === false) {
     throw new Error(
       payload?.message ||
@@ -209,7 +207,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
       }
 
       const registered = await run(() =>
-        request(process.env.PAPER_API_URL + "/api/v1/Auth/Register", {
+        request("/Auth/Register", {
           firstName: data.firstName.trim(),
           lastName: data.lastName.trim(),
           userName: data.userName.trim(),
@@ -240,7 +238,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     }
 
     const loggedIn = await run(() =>
-      request(process.env.PAPER_API_URL + "/api/v1/Auth/Login", {
+      request("/Auth/Login", {
         email,
         password,
       }).then(rememberAuthToken),
@@ -265,7 +263,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     }
 
     const sent = await run(() =>
-      request(process.env.PAPER_API_URL + "/api/v1/Auth/SendOtp", {
+      request("/Auth/SendOtp", {
         mobileNo: phone,
       }),
     );
@@ -303,13 +301,10 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     setError("");
 
     try {
-      const payload = await request(
-        process.env.PAPER_API_URL + "/api/v1/Auth/VerifyOtp",
-        {
-          mobile: phone,
-          code,
-        },
-      );
+      const payload = await request("/Auth/VerifyOtp", {
+        mobile: phone,
+        code,
+      });
       const data = payload?.data;
       // Stores data.accessToken; a registrationToken alone is not a login token.
       rememberAuthToken(payload);
@@ -353,7 +348,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     }
 
     const completed = await run(() =>
-      request(process.env.PAPER_API_URL + "/api/v1/Auth/CompleteRegistration", {
+      request("/Auth/CompleteRegistration", {
         registrationToken,
         firstName,
         lastName,

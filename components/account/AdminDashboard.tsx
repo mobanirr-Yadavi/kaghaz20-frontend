@@ -87,7 +87,7 @@ const viewTitles: Record<AdminView, { title: string; description: string }> = {
 };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await backendFetch(`/api-v1${path}`, {
+  const response = await backendFetch(path, {
     ...init,
     headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
   });

@@ -41,7 +41,7 @@ export function UserDashboard({
       setMessage("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
       return;
     }
-    const response = await backendFetch("/api-v1/Profile/UpdateProfile", {
+    const response = await backendFetch("/Profile/UpdateProfile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
