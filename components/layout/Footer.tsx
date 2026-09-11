@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { customerLinks, quickLinks } from "@/data/footerLinks";
+import { SUPPORT_PHONE } from "@/lib/site";
 
 function FooterList({ title, items }: { title: string; items: { label: string; href: string }[] }) {
   return (
@@ -98,7 +99,9 @@ export function Footer() {
             dir="ltr"
             className="text-right"
           >
-            09120241178
+            <a className="transition hover:text-buttonGold" href={SUPPORT_PHONE.tel}>
+              {SUPPORT_PHONE.display}
+            </a>
           </li>
 
           <li>info@kaghaz20.ir</li>
@@ -121,7 +124,7 @@ export function Footer() {
           <a
             aria-label="تماس تلفنی"
             className="grid size-8 place-items-center rounded-full bg-white/12 text-xs font-black transition hover:bg-buttonGold hover:text-navy"
-            href="tel:+989120241178"
+            href={SUPPORT_PHONE.tel}
           >
             ☎
           </a>
