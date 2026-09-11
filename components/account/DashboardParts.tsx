@@ -26,6 +26,7 @@ export function DashboardSidebar({ profile, admin = false }: { profile: Profile;
 
   const adminItems: SidebarItem[] = [
     { icon: "dashboard", label: "داشبورد", href: "/account" },
+    { icon: "visits", label: "بازدیدها", href: "/account/visits" },
     { icon: "orders", label: "سفارش‌ها", href: "/account/orders" },
     { icon: "products", label: "محصولات", href: "/account/products" },
     { icon: "categories", label: "دسته‌بندی‌ها", href: "/account/categories" },
@@ -59,11 +60,12 @@ export function DashboardSidebar({ profile, admin = false }: { profile: Profile;
   );
 }
 
-type IconName = "dashboard" | "orders" | "products" | "categories" | "customers" | "settings";
+type IconName = "dashboard" | "visits" | "orders" | "products" | "categories" | "customers" | "settings";
 
 function SidebarIcon({ name }: { name: IconName }) {
   const paths: Record<IconName, React.ReactNode> = {
     dashboard: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
+    visits: <><path d="M4 20h16"/><path d="M7 16v-5M12 16V6M17 16v-8"/></>,
     orders: <><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></>,
     products: <><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></>,
     categories: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,

@@ -4,6 +4,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { PageTransitionLoader } from "@/components/loading/PageTransitionLoader";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { VisitTracker } from "@/components/analytics/VisitTracker";
 import "./globals.css";
 import Script from "next/script";
 
@@ -73,6 +74,7 @@ export default function RootLayout({
           </Suspense>
         </CartProvider>
         <InstallPrompt />
+        <VisitTracker />
         <Script
           id="goftino-widget"
           strategy="afterInteractive"

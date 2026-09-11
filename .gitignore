@@ -3,6 +3,9 @@ node_modules
 .npm-cache
 *.tsbuildinfo
 
+# Site visit statistics written by lib/visits.ts.
+.data/
+
 # Local environment files may contain secrets.
 .env*
 !.env.example
