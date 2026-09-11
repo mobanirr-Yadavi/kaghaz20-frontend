@@ -288,9 +288,35 @@ export function AuthPage({
   };
 
   const updateOtp = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, "").slice(-1);
+    const digits = value.replace(/\D/g, "");
 
     setOtpState("idle");
+
+    // The browser's one-time-code suggestion (or a paste) puts the whole code
+    // into one box: spread it across the boxes instead of keeping one digit.
+    if (digits.length > 2 || (digits.length === 2 && !otp[index])) {
+      const start = digits.length >= otp.length ? 0 : index;
+      const next = [...otp];
+
+      digits
+        .slice(0, otp.length - start)
+        .split("")
+        .forEach((item, offset) => {
+          next[start + offset] = item;
+        });
+
+      setOtp(next);
+      otpRefs.current[Math.min(start + digits.length, otp.length) - 1]?.focus();
+      return;
+    }
+
+    // Typing into a filled box yields old + new digit; keep the new one.
+    const digit =
+      digits.length === 2
+        ? digits[0] === otp[index]
+          ? digits[1]
+          : digits[0]
+        : digits;
 
     setOtp((current) =>
       current.map((item, position) =>
@@ -546,7 +572,7 @@ export function AuthPage({
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  maxLength={1}
+                  maxLength={otp.length}
                   autoComplete={
                     index === 0 ? "one-time-code" : "off"
                   }
