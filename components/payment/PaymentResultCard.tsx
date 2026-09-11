@@ -14,11 +14,13 @@ export function PaymentResultCard({
   trackingCode?: string;
   code?: string;
 }) {
-  const { clearCart } = useCart();
+  const { clearCart, hydrated } = useCart();
   const router = useRouter();
 
   useEffect(() => {
-    if (!success) return;
+    // Wait for CartProvider to load the cart from localStorage; otherwise its
+    // hydration effect (which runs after this child effect) restores the old items.
+    if (!success || !hydrated) return;
 
     clearCart();
 
@@ -27,7 +29,7 @@ export function PaymentResultCard({
     }, 6000);
 
     return () => window.clearTimeout(redirectTimer);
-  }, [success, clearCart, router]);
+  }, [success, hydrated, clearCart, router]);
 
   return (
     <section className="mx-auto max-w-xl rounded-2xl bg-white p-6 text-center shadow-card sm:p-10">
