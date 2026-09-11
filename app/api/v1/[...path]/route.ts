@@ -1,8 +1,34 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getApiUrl } from "@/lib/env";
+import { normalizeMobile } from "@/lib/digits";
 
 const API_URL = getApiUrl();
+
+// One OTP SMS per mobile number every 2 minutes (the login page shows the same
+// countdown). In-memory, so it covers this single Next.js server process.
+const OTP_COOLDOWN_MS = 2 * 60 * 1000;
+const otpRequests = new Map<string, number>();
+
+function otpMobileFromBody(body: ArrayBuffer): string {
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(body)) as { mobileNo?: unknown };
+    return typeof payload.mobileNo === "string" ? normalizeMobile(payload.mobileNo) : "";
+  } catch {
+    return "";
+  }
+}
+
+function otpSecondsLeft(mobile: string): number {
+  const now = Date.now();
+
+  for (const [key, sentAt] of otpRequests) {
+    if (now - sentAt >= OTP_COOLDOWN_MS) otpRequests.delete(key);
+  }
+
+  const sentAt = otpRequests.get(mobile);
+  return sentAt ? Math.ceil((sentAt + OTP_COOLDOWN_MS - now) / 1000) : 0;
+}
 
 const AUTH_COOKIE_OPTIONS = {
   httpOnly: true,
@@ -102,6 +128,27 @@ async function proxy(
     ? await request.arrayBuffer()
     : undefined;
 
+  const otpMobile =
+    request.method === "POST" &&
+    normalizedPath.toLowerCase() === "auth/sendotp" &&
+    body
+      ? otpMobileFromBody(body)
+      : "";
+
+  if (otpMobile) {
+    const wait = otpSecondsLeft(otpMobile);
+
+    if (wait > 0) {
+      return NextResponse.json(
+        {
+          isSuccess: false,
+          message: `برای دریافت کد جدید ${new Intl.NumberFormat("fa-IR").format(wait)} ثانیه دیگر صبر کنید.`,
+        },
+        { status: 429, headers: { "retry-after": String(wait) } },
+      );
+    }
+  }
+
   try {
     const upstreamResponse = await fetch(upstreamUrl, {
       method: request.method,
@@ -110,6 +157,10 @@ async function proxy(
       cache: "no-store",
       redirect: "manual",
     });
+
+    if (otpMobile && upstreamResponse.ok) {
+      otpRequests.set(otpMobile, Date.now());
+    }
 
     const responseText = await upstreamResponse.text();
 

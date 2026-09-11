@@ -37,6 +37,35 @@ async function request(path: string, body: Record<string, string>) {
   return payload;
 }
 
+const OTP_COOLDOWN_SECONDS = 120;
+const otpSentKey = (mobile: string) => `kaghaz20-otp-sent-${mobile}`;
+
+// Seconds before this number may request another code. Kept in localStorage so a
+// reload doesn't reset it; the API proxy enforces the same limit server-side.
+function otpSecondsLeft(mobile: string) {
+  try {
+    const sentAt = Number(window.localStorage.getItem(otpSentKey(mobile)));
+    const left = Math.ceil((sentAt + OTP_COOLDOWN_SECONDS * 1000 - Date.now()) / 1000);
+    if (sentAt && left <= 0) window.localStorage.removeItem(otpSentKey(mobile));
+    return sentAt ? Math.max(0, left) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function markOtpSent(mobile: string) {
+  try {
+    window.localStorage.setItem(otpSentKey(mobile), String(Date.now()));
+  } catch {
+    // Storage may be blocked on some mobile browsers; the server still limits requests.
+  }
+}
+
+const faNumber = new Intl.NumberFormat("fa-IR");
+const faTwoDigits = new Intl.NumberFormat("fa-IR", { minimumIntegerDigits: 2 });
+const formatCountdown = (seconds: number) =>
+  `${faNumber.format(Math.floor(seconds / 60))}:${faTwoDigits.format(seconds % 60)}`;
+
 export function AuthPage({
   mode,
 }: {
@@ -55,6 +84,20 @@ export function AuthPage({
   const [loading, setLoading] = useState(false);
 
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const [otpCooldown, setOtpCooldown] = useState(0);
+
+  useEffect(() => {
+    if (!isMobile(phone)) {
+      setOtpCooldown(0);
+      return;
+    }
+
+    const tick = () => setOtpCooldown(otpSecondsLeft(phone));
+    tick();
+    const timer = window.setInterval(tick, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [phone]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -193,11 +236,16 @@ export function AuthPage({
     }
   };
 
-  const sendOtp = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const requestOtp = async () => {
     if (!isMobile(phone)) {
       setError("شماره موبایل را با فرمت ۰۹xxxxxxxxx وارد کنید.");
+      return;
+    }
+
+    const wait = otpSecondsLeft(phone);
+
+    if (wait > 0) {
+      setError(`برای دریافت کد جدید ${formatCountdown(wait)} دیگر صبر کنید.`);
       return;
     }
 
@@ -208,6 +256,8 @@ export function AuthPage({
     );
 
     if (sent) {
+      markOtpSent(phone);
+      setOtpCooldown(OTP_COOLDOWN_SECONDS);
       setMobileStep("otp");
       setOtp(Array(6).fill(""));
       setOtpState("idle");
@@ -216,6 +266,11 @@ export function AuthPage({
         otpRefs.current[0]?.focus();
       }, 50);
     }
+  };
+
+  const sendOtp = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void requestOtp();
   };
 
   const verifyOtp = async (event: FormEvent<HTMLFormElement>) => {
@@ -542,12 +597,14 @@ export function AuthPage({
 
             <button
               className="auth-main-action"
-              disabled={loading}
+              disabled={loading || otpCooldown > 0}
               type="submit"
             >
               {loading
                 ? "در حال ارسال…"
-                : "ارسال پیامک یکبار مصرف"}
+                : otpCooldown > 0
+                  ? `ارسال مجدد تا ${formatCountdown(otpCooldown)}`
+                  : "ارسال پیامک یکبار مصرف"}
             </button>
           </form>
         ) : mobileStep === "otp" ? (
@@ -598,6 +655,17 @@ export function AuthPage({
               type="submit"
             >
               {loading ? "در حال بررسی…" : "تأیید و ورود"}
+            </button>
+
+            <button
+              className="otp-back"
+              type="button"
+              disabled={loading || otpCooldown > 0}
+              onClick={() => void requestOtp()}
+            >
+              {otpCooldown > 0
+                ? `ارسال مجدد کد تا ${formatCountdown(otpCooldown)}`
+                : "ارسال مجدد کد"}
             </button>
 
             <button
