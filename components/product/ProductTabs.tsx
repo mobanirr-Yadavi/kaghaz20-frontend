@@ -7,7 +7,7 @@ export function ProductTabs({ product }: { product: Product }) {
   return (
     <section className="rounded-xl bg-white p-6 shadow-card">
       <div className="mb-5 grid grid-cols-2 gap-2 border-b border-borderBlue text-center text-sm font-black text-navy md:grid-cols-4">
-        {["توضیحات محصول", "مشخصات فنی", "نظرات کاربران", "سوالات متداول"].map((tab, index) => (
+        {["توضیحات محصول"].map((tab, index) => (
           <span className={`pb-3 ${index === 0 ? "border-b-2 border-buttonGold" : ""}`} key={tab}>{tab}</span>
         ))}
       </div>
