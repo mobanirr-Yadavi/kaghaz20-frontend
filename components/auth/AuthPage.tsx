@@ -94,6 +94,8 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
   const [loading, setLoading] = useState(false);
 
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
+  // Code currently being verified (or already accepted); guards against double submits.
+  const verifyingRef = useRef<string | null>(null);
   const [otpCooldown, setOtpCooldown] = useState(0);
   // 0 → 1 over the 2-minute wait; drives the fill on the send/resend buttons.
   const cooldownProgress =
@@ -269,6 +271,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     );
 
     if (sent) {
+      verifyingRef.current = null;
       markOtpSent(phone);
       setOtpCooldown(OTP_COOLDOWN_SECONDS);
       setMobileStep("otp");
@@ -286,15 +289,16 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     void requestOtp();
   };
 
-  const verifyOtp = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const code = otp.join("");
-
+  // Runs as soon as the sixth digit lands (typed, pasted or filled from the SMS),
+  // so entering the code takes the user straight into the panel.
+  const submitCode = async (code: string) => {
     if (code.length !== 6) {
       setError("کد ۶ رقمی را کامل وارد کنید.");
       return;
     }
+
+    if (verifyingRef.current) return;
+    verifyingRef.current = code;
 
     setOtpState("checking");
     setLoading(true);
@@ -317,20 +321,26 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
         setRegistrationToken(data.registrationToken);
         setMobileStep("profile");
         setOtpState("idle");
+        verifyingRef.current = null;
         return;
       }
 
-      setTimeout(() => {
-        window.location.assign("/account");
-      }, 350);
+      window.location.assign("/account");
     } catch (reason) {
       setOtpState("invalid");
       setError(
         reason instanceof Error ? reason.message : "کد واردشده معتبر نیست.",
       );
+      // Wrong code: let the user correct it and try again.
+      verifyingRef.current = null;
     } finally {
       setLoading(false);
     }
+  };
+
+  const verifyOtp = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void submitCode(otp.join(""));
   };
 
   const completeMobileRegistration = async (
@@ -362,6 +372,12 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     }
   };
 
+  // Six boxes filled means the code is complete; verify without waiting for a click.
+  const autoSubmit = (digits: string[]) => {
+    const code = digits.join("");
+    if (code.length === 6 && verifyingRef.current !== code) void submitCode(code);
+  };
+
   const updateOtp = (index: number, value: string) => {
     const digits = toEnglishDigits(value).replace(/\D/g, "");
 
@@ -382,6 +398,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
 
       setOtp(next);
       otpRefs.current[Math.min(start + digits.length, otp.length) - 1]?.focus();
+      autoSubmit(next);
       return;
     }
 
@@ -393,13 +410,16 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
           : digits[0]
         : digits;
 
-    setOtp((current) =>
-      current.map((item, position) => (position === index ? digit : item)),
+    const next = otp.map((item, position) =>
+      position === index ? digit : item,
     );
+    setOtp(next);
 
     if (digit) {
       otpRefs.current[index + 1]?.focus();
     }
+
+    autoSubmit(next);
   };
 
   const otpKey = (event: KeyboardEvent<HTMLInputElement>, index: number) => {
