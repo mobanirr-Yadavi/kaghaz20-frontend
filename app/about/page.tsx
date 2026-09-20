@@ -79,7 +79,7 @@ export default function AboutPage() {
       <Header />
       <main className="site-page space-y-5 sm:space-y-6">
         {/* داستان ما */}
-        <section className="flex gap-6 rounded-[26px] border border-borderBlue/70 bg-white p-5 shadow-card  lg:items-center lg:gap-10 lg:p-8">
+        <section className="flex flex-col gap-6 rounded-[26px] border border-borderBlue/70 bg-white p-5 shadow-card lg:flex-row  lg:items-center lg:gap-10 lg:p-8">
           <div>
             <p className="text-xs font-black text-buttonGold sm:text-sm">
               داستان ما
@@ -100,7 +100,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="w-8/12 relative order-first aspect-[4/3] overflow-hidden rounded-2xl bg-softBlue lg:order-last lg:aspect-[5/4]">
+          <div className="w-full relative order-first aspect-[4/3] overflow-hidden rounded-2xl bg-softBlue lg:order-last lg:aspect-[5/4]">
             <Image
               alt="بسته‌های کاغذ کاغذ ۲۰"
               className="object-cover"
