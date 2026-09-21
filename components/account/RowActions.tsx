@@ -1,4 +1,4 @@
-import { PencilIcon, TrashIcon } from "@/components/ui/Icons";
+import { Pencil, Trash2 } from "lucide-react";
 
 type RowActionsProps = {
   // Row name, used in the buttons' accessible labels ("ویرایش <name>").
@@ -12,12 +12,12 @@ export function RowActions({ name, onEdit, onDelete }: RowActionsProps) {
     <div className="row-actions">
       {onEdit ? (
         <button type="button" className="row-action row-action--edit" onClick={onEdit} aria-label={`ویرایش ${name}`} title="ویرایش">
-          <PencilIcon />
+          <Pencil aria-hidden />
           <span>ویرایش</span>
         </button>
       ) : null}
       <button type="button" className="row-action row-action--delete" onClick={onDelete} aria-label={`حذف ${name}`} title="حذف">
-        <TrashIcon />
+        <Trash2 aria-hidden />
         <span>حذف</span>
       </button>
     </div>

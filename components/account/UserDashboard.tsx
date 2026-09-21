@@ -7,6 +7,7 @@ import { backendFetch, backendGetPaged } from "@/lib/backend";
 import { ORDERS_PAGE_SIZE, type PagedResult } from "@/lib/pagination";
 import { usePagedList } from "@/lib/usePagedList";
 import { Pagination } from "@/components/ui/Pagination";
+import { Hourglass, PackageCheck, Wallet } from "lucide-react";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
 
 const statusLabel: Record<string, string> = {
@@ -109,21 +110,21 @@ export function UserDashboard({
           <div className="user-main">
             <div className="metric-grid user-metrics">
               <article>
-                <i>▣</i>
+                <i><Hourglass aria-hidden /></i>
                 <span>
                   در حال پردازش<b>{processing}</b>
                   <small>سفارش</small>
                 </span>
               </article>
               <article>
-                <i>□</i>
+                <i><PackageCheck aria-hidden /></i>
                 <span>
                   سفارش‌های پرداخت‌شده<b>{paidOrders.length}</b>
                   <small>سفارش</small>
                 </span>
               </article>
               <article>
-                <i>▤</i>
+                <i><Wallet aria-hidden /></i>
                 <span>
                   مجموع خرید<b>{money(total)}</b>
                   <small>تومان</small>

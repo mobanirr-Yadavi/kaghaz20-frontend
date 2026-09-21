@@ -13,6 +13,7 @@ import {
 } from "@/lib/pagination";
 import { usePagedList } from "@/lib/usePagedList";
 import { Pagination } from "@/components/ui/Pagination";
+import { ExternalLink, Package, PackageCheck, Users, Wallet } from "lucide-react";
 import type {
   AdminCategory,
   AdminProduct,
@@ -370,7 +371,10 @@ export function AdminDashboard({
             <h1>{viewTitles[view].title}</h1>
             <p>{viewTitles[view].description}</p>
           </div>
-          <a href="/">مشاهده سایت</a>
+          <a href="/">
+            <ExternalLink aria-hidden />
+            مشاهده سایت
+          </a>
         </header>
 
         {message ? <div className="dash-empty">{message}</div> : null}
@@ -380,7 +384,7 @@ export function AdminDashboard({
           className={`metric-grid admin-metrics ${view !== "overview" ? "is-hidden" : ""}`}
         >
           <article>
-            <i>◇</i>
+            <i><Package aria-hidden /></i>
             <span>
               تعداد محصولات
               <b>{money(productRows.length || stats.totalProducts)}</b>
@@ -388,21 +392,21 @@ export function AdminDashboard({
             </span>
           </article>
           <article>
-            <i>□</i>
+            <i><PackageCheck aria-hidden /></i>
             <span>
               سفارش‌های پرداخت‌شده<b>{money(paidOrders.length)}</b>
               <small>سفارش</small>
             </span>
           </article>
           <article>
-            <i>♙</i>
+            <i><Users aria-hidden /></i>
             <span>
               تعداد مشتریان<b>{money(customers.length || stats.totalUsers)}</b>
               <small>مشتری</small>
             </span>
           </article>
           <article>
-            <i>◎</i>
+            <i><Wallet aria-hidden /></i>
             <span>
               کل فروش
               <b>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { CalendarDays, Eye, Radio, UserRound } from "lucide-react";
 import type { VisitDay, VisitStats } from "@/lib/visits";
 import { EmptyRows, money as num } from "./DashboardParts";
 
@@ -177,10 +178,10 @@ export function VisitStatsPanel({
       ) : null}
 
       <div className="metric-grid admin-metrics">
-        <article><i>◉</i><span>بازدید امروز<b>{num(today.views)}</b><small>{delta}</small></span></article>
-        <article><i>♙</i><span>بازدیدکننده امروز<b>{num(today.visitors)}</b><small>نفر</small></span></article>
-        <article><i className="visits-online">●</i><span>آنلاین<b>{num(online)}</b><small>در ۲ دقیقه اخیر</small></span></article>
-        <article><i>▥</i><span>بازدید ۳۰ روز اخیر<b>{num(last30.views)}</b><small>{num(last30.visitors)} بازدیدکننده</small></span></article>
+        <article><i><Eye aria-hidden /></i><span>بازدید امروز<b>{num(today.views)}</b><small>{delta}</small></span></article>
+        <article><i><UserRound aria-hidden /></i><span>بازدیدکننده امروز<b>{num(today.visitors)}</b><small>نفر</small></span></article>
+        <article><i className="visits-online"><Radio aria-hidden /></i><span>آنلاین<b>{num(online)}</b><small>در ۲ دقیقه اخیر</small></span></article>
+        <article><i><CalendarDays aria-hidden /></i><span>بازدید ۳۰ روز اخیر<b>{num(last30.views)}</b><small>{num(last30.visitors)} بازدیدکننده</small></span></article>
       </div>
 
       {detailed ? (

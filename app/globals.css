@@ -401,3 +401,4 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   }
 }
 .dash-pagination{padding:16px 14px;border-top:1px solid #e7ecf3}.table-wrap.is-loading{opacity:.5;pointer-events:none;transition:opacity .15s}.dash-error{gap:12px;align-content:center;text-align:center}.dash-error button{height:40px;padding:0 18px;border:0;border-radius:9px;background:#001b55;color:#fff;font-size:12px;font-weight:900;cursor:pointer}
+.metric-grid article>i svg{width:26px;height:26px;stroke-width:1.8}.dash-identity>span svg{width:22px;height:22px}.dash-welcome>a{grid-auto-flow:column;gap:8px}.dash-welcome>a svg{width:16px;height:16px}@media(max-width:760px){.metric-grid article>i svg{width:21px;height:21px}}
