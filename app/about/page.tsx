@@ -106,9 +106,8 @@ export default function AboutPage() {
               className="object-cover"
               fill
               priority
-              objectFit="fill"
               sizes="(max-width: 1024px) 100vw, 45vw"
-              src="/images/home-hero-premium.webp"
+              src="/images/pages/about-story.webp"
             />
           </div>
         </section>
@@ -143,10 +142,10 @@ export default function AboutPage() {
           <div className="relative order-first aspect-[4/3] overflow-hidden rounded-2xl bg-softBlue lg:aspect-[5/4]">
             <Image
               alt="انبار کاغذ ۲۰"
-              className="object-fill"
+              className="object-cover"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
-              src="/images/pages/about-factory.png"
+              src="/images/pages/about-warehouse.webp"
             />
           </div>
         </section>
@@ -206,10 +205,10 @@ export default function AboutPage() {
             <div className="relative order-first aspect-[4/3] overflow-hidden rounded-2xl bg-softBlue lg:order-last lg:aspect-[5/4]">
               <Image
                 alt="تیم نرم‌افزاری کاغذ ۲۰"
-                className="object-fill"
+                className="object-cover"
                 fill
                 sizes="(max-width: 1024px) 100vw, 45vw"
-                src="/images/pages/about-building.png"
+                src="/images/pages/about-team.webp"
               />
             </div>
           </div>
