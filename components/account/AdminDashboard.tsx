@@ -5,7 +5,14 @@ import DatePicker, { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { toEnglishDigits } from "@/lib/digits";
-import { backendFetch } from "@/lib/backend";
+import { backendFetch, backendGetPaged } from "@/lib/backend";
+import {
+  ORDERS_PAGE_SIZE,
+  paginateLocally,
+  type PagedResult,
+} from "@/lib/pagination";
+import { usePagedList } from "@/lib/usePagedList";
+import { Pagination } from "@/components/ui/Pagination";
 import type {
   AdminCategory,
   AdminProduct,
@@ -101,6 +108,7 @@ export function AdminDashboard({
   profile,
   stats,
   orders,
+  initialOrdersPage = null,
   users,
   products,
   categories,
@@ -110,6 +118,7 @@ export function AdminDashboard({
   profile: Profile;
   stats: AdminStats;
   orders: Order[];
+  initialOrdersPage?: PagedResult<Order> | null;
   users: AdminUser[];
   products: AdminProduct[];
   categories: AdminCategory[];
@@ -175,10 +184,31 @@ export function AdminDashboard({
       statusMatches && createdAt >= orderFromTime && createdAt <= orderToTime
     );
   });
+  // "همه سفارش‌ها" is paged by the backend. GetOrdersPaged has no status/date
+  // parameters, so while a filter is set the filtered full list is paged here instead.
+  const orderFiltersActive =
+    orderStatusFilter !== "all" || orderFromDate !== null || orderToDate !== null;
+  const ordersPage = usePagedList({
+    enabled: view === "orders",
+    queryKey: orderFiltersActive
+      ? `filtered|${orderStatusFilter}|${orderFromTime}|${orderToTime}`
+      : "all",
+    initial: initialOrdersPage,
+    load: (pageNumber) =>
+      orderFiltersActive
+        ? Promise.resolve(
+            paginateLocally(filteredOrders, pageNumber, ORDERS_PAGE_SIZE),
+          )
+        : backendGetPaged<Order>(
+            "/Admin/GetOrdersPaged",
+            pageNumber,
+            ORDERS_PAGE_SIZE,
+          ),
+  });
   const visibleCustomers =
     view === "overview" ? recentCustomers.slice(0, 5) : recentCustomers;
   const visibleOrders =
-    view === "overview" ? paidOrders.slice(0, 5) : filteredOrders;
+    view === "overview" ? paidOrders.slice(0, 5) : (ordersPage.data?.items ?? []);
 
   async function submitProduct(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -657,7 +687,10 @@ export function AdminDashboard({
               {view === "overview" ? (
                 <a href="/account/orders">مشاهده همه</a>
               ) : (
-                <span>{money(visibleOrders.length)} سفارش</span>
+                <span>
+                  {ordersPage.data ? money(ordersPage.data.totalCount) : "…"}{" "}
+                  سفارش
+                </span>
               )}
             </div>
             {view === "orders" ? (
@@ -715,8 +748,20 @@ export function AdminDashboard({
                 </button>
               </div>
             ) : null}
-            {visibleOrders.length ? (
-              <div className="table-wrap">
+            {view === "orders" && ordersPage.error ? (
+              <div className="dash-empty dash-error" role="alert">
+                <span>{ordersPage.error}</span>
+                <button type="button" onClick={ordersPage.retry}>
+                  تلاش دوباره
+                </button>
+              </div>
+            ) : view === "orders" && !ordersPage.data ? (
+              <EmptyRows text="در حال دریافت سفارش‌ها…" />
+            ) : visibleOrders.length ? (
+              <div
+                aria-busy={view === "orders" && ordersPage.loading}
+                className={`table-wrap ${view === "orders" && ordersPage.loading ? "is-loading" : ""}`}
+              >
                 <table className="orders-table">
                   <thead>
                     <tr>
@@ -829,6 +874,18 @@ export function AdminDashboard({
                 }
               />
             )}
+            {view === "orders" && ordersPage.data && !ordersPage.error ? (
+              <Pagination
+                className="dash-pagination"
+                disabled={ordersPage.loading}
+                onChange={(pageNumber) => {
+                  setExpandedOrderId(null);
+                  ordersPage.setPage(pageNumber);
+                }}
+                page={ordersPage.page}
+                totalPages={ordersPage.data.totalPages}
+              />
+            ) : null}
           </section>
         </div>
       </section>

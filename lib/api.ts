@@ -1,6 +1,7 @@
 import type { Product } from "@/types/product";
 import type { Category } from "@/types/category";
 import { getApiUrl } from "@/lib/env";
+import { normalizePaged, pagedQuery, type PagedResult, type RawPaged } from "@/lib/pagination";
 
 type ApiResponse<T> = {
   isSuccess: boolean;
@@ -80,6 +81,18 @@ function mapProduct(item: ApiProduct): Product {
 
 export async function getProducts(): Promise<Product[]> {
   return (await apiGet<ApiProduct[]>("/Product/GetAll")).map(mapProduct);
+}
+
+export type ProductQuery = { pageNumber: number; pageSize: number; search?: string; categoryId?: string };
+
+// One page of the shop. Without a search or category filter the plain GetPaged list is
+// used; with one, Product/Search (which filters on `search` and `categoryId`).
+export async function getProductsPage({ pageNumber, pageSize, search, categoryId }: ProductQuery): Promise<PagedResult<Product>> {
+  const filtered = Boolean(search?.trim() || categoryId);
+  const path = filtered
+    ? `/Product/Search${pagedQuery(pageNumber, pageSize, { search: search?.trim(), categoryId })}`
+    : `/Product/GetPaged${pagedQuery(pageNumber, pageSize)}`;
+  return normalizePaged(await apiGet<RawPaged<ApiProduct>>(path), mapProduct);
 }
 
 export async function getCategories(): Promise<Category[]> {

@@ -3,7 +3,10 @@
 import { FormEvent, useState } from "react";
 import type { Order, Profile } from "@/lib/account";
 import { isMobile, normalizeMobile } from "@/lib/digits";
-import { backendFetch } from "@/lib/backend";
+import { backendFetch, backendGetPaged } from "@/lib/backend";
+import { ORDERS_PAGE_SIZE, type PagedResult } from "@/lib/pagination";
+import { usePagedList } from "@/lib/usePagedList";
+import { Pagination } from "@/components/ui/Pagination";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
 
 const statusLabel: Record<string, string> = {
@@ -20,11 +23,24 @@ type ApiResponse<T> = { isSuccess: boolean; data: T; message?: string };
 export function UserDashboard({
   profile,
   orders,
+  initialOrdersPage,
 }: {
   profile: Profile;
   orders: Order[];
+  initialOrdersPage: PagedResult<Order> | null;
 }) {
   const [currentProfile, setCurrentProfile] = useState(profile);
+  const ordersPage = usePagedList({
+    queryKey: "user-orders",
+    initial: initialOrdersPage,
+    load: (pageNumber) =>
+      backendGetPaged<Order>(
+        "/Order/GetUserOrdersPaged",
+        pageNumber,
+        ORDERS_PAGE_SIZE,
+      ),
+  });
+  const pageOrders = ordersPage.data?.items ?? [];
   const [message, setMessage] = useState("");
   const processing = orders.filter((order) =>
     ["Pending", "Processing"].includes(order.status),
@@ -172,11 +188,25 @@ export function UserDashboard({
 
             <section id="orders" className="dash-card orders-card">
               <div className="card-title">
-                <h2>آخرین سفارش‌ها</h2>
-                <a href="#orders">مشاهده همه ←</a>
+                <h2>سفارش‌های من</h2>
+                {ordersPage.data ? (
+                  <span>{money(ordersPage.data.totalCount)} سفارش</span>
+                ) : null}
               </div>
-              {orders.length ? (
-                <div className="table-wrap">
+              {ordersPage.error ? (
+                <div className="dash-empty dash-error" role="alert">
+                  <span>{ordersPage.error}</span>
+                  <button type="button" onClick={ordersPage.retry}>
+                    تلاش دوباره
+                  </button>
+                </div>
+              ) : !ordersPage.data ? (
+                <EmptyRows text="در حال دریافت سفارش‌ها…" />
+              ) : pageOrders.length ? (
+                <div
+                  aria-busy={ordersPage.loading}
+                  className={`table-wrap ${ordersPage.loading ? "is-loading" : ""}`}
+                >
                   <table>
                     <thead>
                       <tr>
@@ -187,7 +217,7 @@ export function UserDashboard({
                       </tr>
                     </thead>
                     <tbody>
-                      {orders.slice(0, 5).map((order) => (
+                      {pageOrders.map((order) => (
                         <tr key={order.id}>
                           <td>#{order.id.slice(0, 8)}</td>
                           <td>{date(order.createdAt)}</td>
@@ -207,6 +237,15 @@ export function UserDashboard({
               ) : (
                 <EmptyRows text="هنوز سفارشی ثبت نشده است." />
               )}
+              {ordersPage.data && !ordersPage.error ? (
+                <Pagination
+                  className="dash-pagination"
+                  disabled={ordersPage.loading}
+                  onChange={ordersPage.setPage}
+                  page={ordersPage.page}
+                  totalPages={ordersPage.data.totalPages}
+                />
+              ) : null}
             </section>
           </div>
         </div>

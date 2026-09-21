@@ -400,3 +400,4 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     animation: none;
   }
 }
+.dash-pagination{padding:16px 14px;border-top:1px solid #e7ecf3}.table-wrap.is-loading{opacity:.5;pointer-events:none;transition:opacity .15s}.dash-error{gap:12px;align-content:center;text-align:center}.dash-error button{height:40px;padding:0 18px;border:0;border-radius:9px;background:#001b55;color:#fff;font-size:12px;font-weight:900;cursor:pointer}

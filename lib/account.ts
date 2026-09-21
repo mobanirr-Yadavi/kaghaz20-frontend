@@ -1,4 +1,5 @@
 import { getApiUrl } from "@/lib/env";
+import { normalizePaged, pagedQuery, type PagedResult, type RawPaged } from "@/lib/pagination";
 
 export type Profile = { id: string; firstName: string; lastName: string; userName: string; email: string; phoneNumber: string; role: string };
 export type OrderItem = { id?: string; productId?: string; productName: string; unitPrice?: number; quantity: number; totalPrice?: number };
@@ -16,4 +17,9 @@ export async function accountGet<T>(path: string, token: string): Promise<T> {
   const payload = await response.json();
   if (!response.ok || !payload?.isSuccess) throw new Error(payload?.message || "API_ERROR");
   return payload.data as T;
+}
+
+// First page of a *Paged endpoint, rendered on the server; later pages load in the browser.
+export async function accountGetFirstPage<T>(path: string, token: string, pageSize: number): Promise<PagedResult<T>> {
+  return normalizePaged<T>(await accountGet<RawPaged<T>>(`${path}${pagedQuery(1, pageSize)}`, token));
 }

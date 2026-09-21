@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   accountGet,
+  accountGetFirstPage,
   type AdminCategory,
   type AdminProduct,
   type AdminStats,
@@ -12,6 +13,7 @@ import {
 import { AdminDashboard, type AdminView } from "./AdminDashboard";
 import { UserDashboard } from "./UserDashboard";
 import { getVisitStats } from "@/lib/visits";
+import { ORDERS_PAGE_SIZE } from "@/lib/pagination";
 
 export async function AccountDashboardPage({
   adminView = "overview",
@@ -30,14 +32,25 @@ export async function AccountDashboardPage({
 
   if (profile.role.toLowerCase() !== "admin") {
     if (adminView !== "overview") redirect("/account");
-    const orders = await accountGet<Order[]>(
-      "/Order/GetUserOrders",
-      token,
-    ).catch(() => []);
-    return <UserDashboard profile={profile} orders={orders} />;
+    // The full list feeds the summary cards; the table below is paged.
+    const [orders, ordersPage] = await Promise.all([
+      accountGet<Order[]>("/Order/GetUserOrders", token).catch(() => []),
+      accountGetFirstPage<Order>(
+        "/Order/GetUserOrdersPaged",
+        token,
+        ORDERS_PAGE_SIZE,
+      ).catch(() => null),
+    ]);
+    return (
+      <UserDashboard
+        profile={profile}
+        orders={orders}
+        initialOrdersPage={ordersPage}
+      />
+    );
   }
 
-  const [stats, orders, users, products, categories, visits] =
+  const [stats, orders, ordersPage, users, products, categories, visits] =
     await Promise.all([
       accountGet<AdminStats>("/Admin/DashboardStatistics", token).catch(
         () => ({
@@ -47,7 +60,16 @@ export async function AccountDashboardPage({
           totalRevenue: 0,
         }),
       ),
+      // All orders feed the overview totals and the filtered list; the unfiltered
+      // "orders" table is paged.
       accountGet<Order[]>("/Admin/GetAllOrders", token).catch(() => []),
+      adminView === "orders"
+        ? accountGetFirstPage<Order>(
+            "/Admin/GetOrdersPaged",
+            token,
+            ORDERS_PAGE_SIZE,
+          ).catch(() => null)
+        : null,
       accountGet<AdminUser[]>("/Admin/GetAllUsers", token).catch(
         () => [],
       ),
@@ -67,6 +89,7 @@ export async function AccountDashboardPage({
       profile={profile}
       stats={stats}
       orders={orders}
+      initialOrdersPage={ordersPage}
       users={users}
       products={products}
       categories={categories}
