@@ -66,21 +66,19 @@ export function PaymentResultCard({
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         {success ? (
           <>
-            <button
-              type="button"
-              disabled
-              className="grid h-12 cursor-not-allowed place-items-center rounded-xl bg-navy font-black text-white opacity-50"
+            <Link
+              href="/account#orders"
+              className="grid h-12 place-items-center rounded-xl bg-navy font-black text-white transition hover:bg-royal"
             >
               مشاهده سفارش‌ها
-            </button>
+            </Link>
 
-            <button
-              type="button"
-              disabled
-              className="grid h-12 cursor-not-allowed place-items-center rounded-xl border border-navy font-black text-navy opacity-50"
+            <Link
+              href="/shop"
+              className="grid h-12 place-items-center rounded-xl border border-navy font-black text-navy transition hover:bg-softBlue"
             >
               بازگشت به فروشگاه
-            </button>
+            </Link>
           </>
         ) : (
           <>
