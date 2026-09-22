@@ -78,6 +78,12 @@ const faTwoDigits = new Intl.NumberFormat("fa-IR", { minimumIntegerDigits: 2 });
 const formatCountdown = (seconds: number) =>
   `${faNumber.format(Math.floor(seconds / 60))}:${faTwoDigits.format(seconds % 60)}`;
 
+// Where to go after signing in: ?next=/cart (same-site paths only), else the account.
+function afterAuthPath() {
+  const next = new URLSearchParams(window.location.search).get("next") || "";
+  return next.startsWith("/") && !next.startsWith("//") ? next : "/account";
+}
+
 export function AuthPage({ mode }: { mode: "login" | "register" }) {
   const register = mode === "register";
 
@@ -220,7 +226,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
       );
 
       if (registered) {
-        window.location.assign("/account");
+        window.location.assign(afterAuthPath());
       }
 
       return;
@@ -247,7 +253,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     );
 
     if (loggedIn) {
-      window.location.assign("/account");
+      window.location.assign(afterAuthPath());
     }
   };
 
@@ -325,7 +331,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
         return;
       }
 
-      window.location.assign("/account");
+      window.location.assign(afterAuthPath());
     } catch (reason) {
       setOtpState("invalid");
       setError(
@@ -368,7 +374,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     );
 
     if (completed) {
-      window.location.assign("/account");
+      window.location.assign(afterAuthPath());
     }
   };
 
