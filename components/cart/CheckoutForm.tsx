@@ -14,12 +14,12 @@ import {
   type AddressInput,
 } from "@/lib/addresses";
 import { clearAuthToken, getAuthToken } from "@/lib/authToken";
-import { backendFetch } from "@/lib/backend";
+import { apiErrorMessage, backendFetch } from "@/lib/backend";
 import type { CartItem } from "@/types/cart";
 
 const LOGIN_URL = "/login?next=/cart";
 
-async function post(path: string, body: object) {
+async function post(path: string, body: object, failure: string) {
   const response = await backendFetch(path, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -32,9 +32,20 @@ async function post(path: string, body: object) {
     throw new Error("برای ثبت سفارش ابتدا وارد حساب کاربری شوید.");
   }
   if (!response.ok || payload?.isSuccess === false) {
-    throw new Error(payload?.message || payload?.title || "ثبت سفارش انجام نشد.");
+    throw new Error(apiErrorMessage(payload, response.status, failure));
   }
   return payload?.data ?? payload;
+}
+
+// Order/Create may answer with the order, { orderId }, or the id itself.
+function readOrderId(order: unknown): string | null {
+  if (typeof order === "string" && order) return order;
+  if (typeof order === "number") return String(order);
+  if (order && typeof order === "object") {
+    const value = (order as Record<string, unknown>).id ?? (order as Record<string, unknown>).orderId;
+    if (typeof value === "string" || typeof value === "number") return String(value);
+  }
+  return null;
 }
 
 // Keeps the current choice when it still exists, else the default address, else the first.
@@ -123,22 +134,24 @@ export function CheckoutForm({ items }: { items: CartItem[] }) {
         items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
         // Not part of the address; the order needs it to know how to ship.
         shippingMethod,
-      });
-      const orderId = order?.id ?? order?.orderId;
-      if (!orderId) throw new Error("شناسه سفارش از سرور دریافت نشد.");
+      }, "ثبت سفارش انجام نشد.");
+      const orderId = readOrderId(order);
+      if (!orderId) throw new Error("سفارش ثبت شد اما شناسه آن از سرور دریافت نشد؛ با پشتیبانی تماس بگیرید.");
 
-      const payment = await post("/Payment/Request", { orderId });
-      if (!payment?.paymentUrl || !payment?.refId) {
+      const payment = await post("/Payment/Request", { orderId }, "اتصال به درگاه پرداخت انجام نشد.");
+      const paymentUrl = payment?.paymentUrl ?? payment?.url;
+      const bankRefId = payment?.refId ?? payment?.RefId;
+      if (!paymentUrl || !bankRefId) {
         throw new Error("اطلاعات اتصال به درگاه کامل دریافت نشد.");
       }
 
       const bankForm = document.createElement("form");
       bankForm.method = "POST";
-      bankForm.action = payment.paymentUrl;
+      bankForm.action = paymentUrl;
       const refId = document.createElement("input");
       refId.type = "hidden";
       refId.name = "RefId";
-      refId.value = payment.refId;
+      refId.value = bankRefId;
       bankForm.appendChild(refId);
       document.body.appendChild(bankForm);
       bankForm.submit();

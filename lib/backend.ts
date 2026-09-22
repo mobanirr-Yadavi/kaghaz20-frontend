@@ -20,3 +20,26 @@ export async function backendGetPaged<T>(path: string, pageNumber: number, pageS
   if (!response.ok || !payload?.isSuccess) throw new Error(payload?.message || "دریافت اطلاعات انجام نشد.");
   return normalizePaged<T>(payload.data);
 }
+
+// A readable message from a failed backend response: the backend's own message, the
+// first validation error (list or ASP.NET { field: [..] } form), else the HTTP status.
+export function apiErrorMessage(payload: unknown, status: number, fallback: string): string {
+  const body = (payload && typeof payload === "object" ? payload : {}) as {
+    message?: unknown;
+    title?: unknown;
+    errors?: unknown;
+  };
+  if (typeof body.message === "string" && body.message.trim()) return body.message;
+  const errors = Array.isArray(body.errors)
+    ? body.errors
+    : body.errors && typeof body.errors === "object"
+      ? Object.values(body.errors).flat()
+      : [];
+  const firstError = errors.find((item): item is string => typeof item === "string" && item.trim() !== "");
+  if (firstError) return firstError;
+  const code = new Intl.NumberFormat("fa-IR", { useGrouping: false }).format(status);
+  if (status === 404) return `${fallback} (سرویس موردنظر روی سرور پیدا نشد؛ کد ${code})`;
+  if (status >= 500) return `${fallback} (خطای سرور؛ کد ${code})`;
+  if (typeof body.title === "string" && body.title.trim()) return `${fallback} (${body.title})`;
+  return status ? `${fallback} (کد ${code})` : fallback;
+}
