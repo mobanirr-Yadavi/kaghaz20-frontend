@@ -94,21 +94,6 @@ export function UserDashboard({
         {message ? <div className="dash-empty">{message}</div> : null}
 
         <div className="user-layout">
-          <aside id="profile" className="profile-card dash-card">
-            <div className="avatar">●</div>
-            <h2>
-              {currentProfile.firstName} {currentProfile.lastName}
-            </h2>
-            <p>{currentProfile.email}</p>
-            <span>حساب کاربری</span>
-            <div className="profile-total">
-              <small>مجموع خرید</small>
-              <b>
-                {money(total)} <em>تومان</em>
-              </b>
-            </div>
-          </aside>
-
           <div className="user-main">
             <div className="metric-grid user-metrics">
               <article>
@@ -134,7 +119,7 @@ export function UserDashboard({
               </article>
             </div>
 
-            <section className="dash-card">
+            <section id="profile" className="dash-card scroll-mt-24">
               <div className="card-title">
                 <h2>پروفایل و تنظیمات</h2>
                 <span>ویرایش اطلاعات حساب</span>
