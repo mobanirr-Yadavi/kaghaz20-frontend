@@ -85,7 +85,7 @@ export default function AboutPage() {
               داستان ما
             </p>
             <h1 className="mt-3 text-2xl font-black leading-[1.8] text-navy sm:text-3xl lg:text-[32px]">
-              چطور kaghaz را ارزان‌تر و هوشمندتر می‌رسانیم
+              چطور کاغذ را ارزان‌تر و هوشمندتر می‌رسانیم
             </h1>
             <p className="mt-4 text-sm font-semibold leading-8 text-muted sm:text-[15px]">
               کاغذ ۲۰ حاصل تلاش یک تیم حرفه‌ای است که با استفاده از فناوری، خرید
