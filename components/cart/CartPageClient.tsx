@@ -7,6 +7,7 @@ import { CartTable } from "@/components/cart/CartTable";
 import { isMobile, mobileOnInput, normalizeMobile } from "@/lib/digits";
 import { backendFetch } from "@/lib/backend";
 import { clearAuthToken } from "@/lib/authToken";
+import { ShoppingCart } from "lucide-react";
 
 async function post(path: string, body: object) {
   const response = await backendFetch(path, {
@@ -156,8 +157,8 @@ export function CartPageClient() {
   if (!items.length) {
     return (
       <div className="relative z-10 mx-auto max-w-2xl rounded-2xl bg-white p-6 text-center shadow-card sm:p-10">
-        <div className="mx-auto grid size-16 place-items-center rounded-full bg-softBlue text-3xl sm:size-20 sm:text-4xl">
-          🛒
+        <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-softBlue text-royal sm:size-20">
+          <ShoppingCart aria-hidden className="size-8 sm:size-9" strokeWidth={1.8} />
         </div>
 
         <h2 className="mt-4 text-lg font-black text-navy sm:mt-5 sm:text-xl">
@@ -169,7 +170,7 @@ export function CartPageClient() {
         </p>
 
         <a
-          className="mx-auto mt-4 grid h-12 w-full max-w-xs place-items-center rounded-xl bg-navy font-black text-white"
+          className="mx-auto mt-5 grid h-12 w-full max-w-xs place-items-center rounded-xl bg-navy font-black text-white shadow-soft transition duration-200 hover:bg-royal hover:shadow-card active:scale-[0.98]"
           href="/shop"
         >
           مشاهده محصولات

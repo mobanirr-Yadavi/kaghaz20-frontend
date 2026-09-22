@@ -3,7 +3,7 @@ import { StandardHero } from "@/components/ui/StandardHero";
 
 export function HeroSection() {
   return (
-    <section className="pt-1" aria-label="کاغذ پریمیوم Double A">
+    <section className="pt-2 sm:pt-4" aria-label="کاغذ پریمیوم Double A">
       <Container>
         <StandardHero
           src="/images/home-hero-premium.webp"

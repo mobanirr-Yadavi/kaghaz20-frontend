@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Pagination } from "@/components/ui/Pagination";
+import { ProductCardSkeleton } from "@/components/ui/Skeletons";
 import { shopFilters } from "@/data/shopFilters";
 import { getProductsPage } from "@/lib/api";
 import { PRODUCTS_PAGE_SIZE, type PagedResult } from "@/lib/pagination";
@@ -109,10 +110,8 @@ export function ShopPageClient({
               </button>
             </div>
           ) : !data ? (
-            <div aria-busy className="grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3">
-              {Array.from({ length: 6 }, (_, index) => (
-                <div className="h-72 animate-pulse rounded-2xl bg-white shadow-card sm:h-96" key={index} />
-              ))}
+            <div aria-busy className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
+              {Array.from({ length: 6 }, (_, index) => <ProductCardSkeleton key={index} />)}
             </div>
           ) : (
             <div aria-busy={loading} className={`transition-opacity ${loading ? "pointer-events-none opacity-50" : ""}`}>

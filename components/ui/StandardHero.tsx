@@ -16,7 +16,6 @@ const mobileHeroByDesktopSrc: Record<string, string> = {
   "/images/pages/store-hero.webp": "/MobileBanners/02-shop-warehouse-mobile.webp",
   "/images/pages/about-hero.webp": "/MobileBanners/03-about-mobile.webp",
   "/images/pages/contact-hero.webp": "/MobileBanners/04-contact-mobile.webp",
-  "/images/pages/blog-hero.webp": "/MobileBanners/06-blog-mobile.webp",
 };
 
 export function StandardHero({

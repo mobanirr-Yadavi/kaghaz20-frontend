@@ -36,8 +36,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...blogPosts.map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: post.dateModified,
       changeFrequency: "monthly" as const,
-      priority: 0.5,
+      priority: 0.6,
+      images: [`${SITE_URL}${post.heroImage}`],
     })),
   ];
 }

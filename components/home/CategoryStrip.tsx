@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/Container";
 export async function CategoryStrip() {
   const apiCategories = await getCategories().catch(() => categories);
   return (
-    <section className="py-5">
+    <section className="reveal py-6 sm:py-8">
       <Container>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {apiCategories.map((category) => (

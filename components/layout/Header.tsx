@@ -19,7 +19,7 @@ export function Header() {
           <div className="hidden flex-1 lg:block" />
           <div className="hidden shrink-0 items-center gap-2 text-navy lg:flex xl:gap-3">
             <CartLink />
-            <Link className="grid size-10 place-items-center rounded-full border border-transparent transition duration-300 hover:-translate-y-0.5 hover:border-borderBlue hover:bg-softBlue hover:shadow-soft" href="/account" aria-label="حساب کاربری"><UserIcon className="size-6" /></Link>
+            <Link className="grid size-11 place-items-center rounded-full border border-transparent transition duration-200 hover:border-borderBlue hover:bg-softBlue hover:shadow-soft active:scale-95" href="/account" aria-label="حساب کاربری"><UserIcon className="size-6" /></Link>
           </div>
         </div>
       </Container>

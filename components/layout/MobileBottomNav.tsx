@@ -2,16 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CartIcon, GridIcon, UserIcon } from "@/components/ui/Icons";
+import { CartIcon, GridIcon, HomeIcon, UserIcon } from "@/components/ui/Icons";
 import { CartLink } from "@/components/cart/CartLink";
-
-function HomeIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 const items = [
   { label: "خانه", href: "/", icon: HomeIcon, match: ["/"] },
@@ -34,8 +26,8 @@ export function MobileBottomNav() {
           const Icon = item.icon;
           return (
             <Link
-              className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl py-1.5 text-[10px] font-black transition sm:text-[11px] ${
-                active ? "bg-softBlue text-buttonGold" : "text-navy"
+              className={`flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-xl py-1.5 text-[10px] font-black transition duration-200 active:scale-95 sm:text-[11px] ${
+                active ? "bg-softBlue text-buttonGold" : "text-navy hover:bg-softBlue/60"
               }`}
               href={item.href}
               key={item.label}

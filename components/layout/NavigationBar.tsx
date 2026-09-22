@@ -14,16 +14,20 @@ export function NavigationBar() {
             const active = item.match?.some((match) => (match === "/" ? pathname === "/" : pathname.startsWith(match)));
             return (
             <Link
-              className={`relative flex h-full shrink-0 items-center px-1 transition hover:text-royal ${
+              aria-current={active ? "page" : undefined}
+              className={`group relative flex h-full shrink-0 items-center px-1 transition-colors duration-200 hover:text-royal ${
                 active ? "text-navy" : "text-deepNavy"
               }`}
               href={item.href}
               key={item.label}
             >
               {item.label}
-              {active ? (
-                <span className="absolute bottom-1 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-buttonGold" />
-              ) : null}
+              <span
+                aria-hidden
+                className={`absolute bottom-3 left-1/2 h-[3px] w-6 -translate-x-1/2 rounded-full bg-buttonGold transition-transform duration-300 ${
+                  active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                }`}
+              />
             </Link>
             );
           })}
