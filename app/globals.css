@@ -104,7 +104,9 @@ body {
 
 main {
   max-width: 100%;
-  overflow-x: hidden;
+  /* clip, not hidden: "hidden" turns <main> into a scroll container, which stops
+     position: sticky inside it (e.g. the account panel sidebar) from sticking. */
+  overflow-x: clip;
 }
 
 a {
