@@ -13,6 +13,7 @@ import {
 } from "@/lib/pagination";
 import { usePagedList } from "@/lib/usePagedList";
 import { Pagination } from "@/components/ui/Pagination";
+import { InvoiceButton, InvoiceModal } from "./InvoiceModal";
 import { ExternalLink, Package, PackageCheck, Users, Wallet } from "lucide-react";
 import type {
   AdminCategory,
@@ -138,6 +139,7 @@ export function AdminDashboard({
   const [orderFromDate, setOrderFromDate] = useState<DateObject | null>(null);
   const [orderToDate, setOrderToDate] = useState<DateObject | null>(null);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
   const firstCategoryId = categoryRows[0]?.id || "";
   const emptyProduct = useMemo<ProductForm>(
     () => ({
@@ -774,6 +776,7 @@ export function AdminDashboard({
                       <th>مبلغ</th>
                       <th>تاریخ سفارش</th>
                       <th>وضعیت</th>
+                      <th>فاکتور</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -816,10 +819,13 @@ export function AdminDashboard({
                               {orderStatusLabels[order.status] || order.status}
                             </span>
                           </td>
+                          <td>
+                            <InvoiceButton onClick={() => setInvoiceOrder(order)} />
+                          </td>
                         </tr>
                         {expandedOrderId === order.id ? (
                           <tr className="order-details-row">
-                            <td colSpan={5}>
+                            <td colSpan={6}>
                               <div className="order-details">
                                 <div className="order-details-head">
                                   <b>اقلام این سفارش</b>
@@ -893,6 +899,7 @@ export function AdminDashboard({
           </section>
         </div>
       </section>
+      <InvoiceModal onClose={() => setInvoiceOrder(null)} order={invoiceOrder} />
     </main>
   );
 }

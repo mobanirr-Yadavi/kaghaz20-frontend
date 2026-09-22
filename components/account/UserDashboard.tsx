@@ -9,6 +9,7 @@ import { usePagedList } from "@/lib/usePagedList";
 import { Pagination } from "@/components/ui/Pagination";
 import { Hourglass, PackageCheck, Wallet } from "lucide-react";
 import { DashboardSidebar, EmptyRows, date, money } from "./DashboardParts";
+import { InvoiceButton, InvoiceModal } from "./InvoiceModal";
 
 const statusLabel: Record<string, string> = {
   Paid: "پرداخت‌شده",
@@ -42,6 +43,7 @@ export function UserDashboard({
       ),
   });
   const pageOrders = ordersPage.data?.items ?? [];
+  const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
   const [message, setMessage] = useState("");
   const processing = orders.filter((order) =>
     ["Pending", "Processing"].includes(order.status),
@@ -215,6 +217,7 @@ export function UserDashboard({
                         <th>تاریخ ثبت</th>
                         <th>مبلغ</th>
                         <th>وضعیت</th>
+                        <th>فاکتور</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -229,6 +232,9 @@ export function UserDashboard({
                             >
                               {statusLabel[order.status] || order.status}
                             </span>
+                          </td>
+                          <td>
+                            <InvoiceButton onClick={() => setInvoiceOrder(order)} />
                           </td>
                         </tr>
                       ))}
@@ -251,6 +257,7 @@ export function UserDashboard({
           </div>
         </div>
       </section>
+      <InvoiceModal onClose={() => setInvoiceOrder(null)} order={invoiceOrder} />
     </main>
   );
 }
