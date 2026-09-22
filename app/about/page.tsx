@@ -211,7 +211,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-1 gap-y-5 rounded-2xl border border-borderBlue/70 bg-page p-5 sm:grid-cols-3 sm:divide-x sm:divide-x-reverse sm:divide-borderBlue lg:-mt-10 lg:w-[78%] lg:bg-white lg:shadow-premium">
+          <div className="mx-auto relative z-10 mt-5 grid grid-cols-1 gap-y-5 rounded-2xl border border-borderBlue/70 bg-page p-5 sm:grid-cols-3 sm:divide-x sm:divide-x-reverse sm:divide-borderBlue lg:w-[78%] lg:bg-white lg:shadow-premium">
             {teamPoints.map((item) => (
               <HighlightItem item={item} key={item.title} />
             ))}
