@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 const fa = new Intl.NumberFormat("fa-IR");
 
 // 1 … 4 5 6 … 12 — always the first, last and the neighbours of the current page.
@@ -47,7 +49,8 @@ export function Pagination({
         disabled={disabled || page <= 1}
         onClick={() => go(page - 1)}
       >
-        <span aria-hidden>›</span> قبلی
+        <ChevronRight aria-hidden className="size-4" />
+        قبلی
       </button>
 
       <ul className="flex items-center gap-1.5">
@@ -79,7 +82,8 @@ export function Pagination({
         disabled={disabled || page >= totalPages}
         onClick={() => go(page + 1)}
       >
-        بعدی <span aria-hidden>‹</span>
+        بعدی
+        <ChevronLeft aria-hidden className="size-4" />
       </button>
     </nav>
   );
