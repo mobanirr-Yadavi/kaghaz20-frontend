@@ -1,5 +1,5 @@
 import { clearAuthToken } from "@/lib/authToken";
-import { apiErrorMessage, backendFetch } from "@/lib/backend";
+import { backendFetch } from "@/lib/backend";
 import type { Profile } from "@/lib/account";
 
 export type Address = {
@@ -29,7 +29,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new AuthRequiredError();
   }
   if (!response.ok || payload?.isSuccess === false) {
-    throw new Error(apiErrorMessage(payload, response.status, "ارتباط با سرور انجام نشد."));
+    const firstError = Array.isArray(payload?.errors) ? payload.errors[0] : undefined;
+    throw new Error(payload?.message || firstError || payload?.title || "ارتباط با سرور انجام نشد.");
   }
   return (payload && typeof payload === "object" && "data" in payload ? payload.data : payload) as T;
 }
