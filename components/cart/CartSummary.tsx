@@ -7,6 +7,9 @@ type CartSummaryProps = {
   shipping: number;
   onCheckout: () => void;
   disabled?: boolean;
+  // "ادامه خرید" before checkout opens, then "ثبت سفارش و پرداخت آنلاین".
+  actionLabel?: string;
+  busy?: boolean;
 };
 
 export function CartSummary({
@@ -15,6 +18,8 @@ export function CartSummary({
   shipping,
   onCheckout,
   disabled,
+  actionLabel = "ادامه خرید",
+  busy = false,
 }: CartSummaryProps) {
   return (
     <aside className="rounded-xl bg-white p-6 shadow-card">
@@ -43,11 +48,11 @@ export function CartSummary({
       </div>
       <button
         className="mt-6 h-12 w-full rounded-lg bg-buttonGold font-black text-white transition hover:bg-[#d89b28] disabled:cursor-not-allowed disabled:opacity-50"
-        disabled={disabled}
+        disabled={disabled || busy}
         onClick={onCheckout}
         type="button"
       >
-        ادامه خرید
+        {busy ? "در حال اتصال به درگاه…" : actionLabel}
       </button>
     </aside>
   );

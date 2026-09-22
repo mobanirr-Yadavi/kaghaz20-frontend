@@ -11,21 +11,32 @@ export function CartPageClient() {
   const { items, hydrated, updateQuantity, removeItem } = useCart();
 
   const [checkout, setCheckout] = useState(false);
+  const [placingOrder, setPlacingOrder] = useState(false);
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [items],
   );
 
-  const openCheckout = () => {
-    setCheckout(true);
-
+  const scrollToCheckout = () =>
     requestAnimationFrame(() => {
       document.getElementById("checkout-form")?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     });
+
+  // First click opens checkout; once it is open the same button places the order
+  // (it submits the checkout form, exactly like the button at the end of the form).
+  const onSummaryAction = () => {
+    if (!checkout) {
+      setCheckout(true);
+      scrollToCheckout();
+      return;
+    }
+    const form = document.getElementById("checkout-order-form");
+    if (form instanceof HTMLFormElement) form.requestSubmit();
+    else scrollToCheckout(); // still loading, or the user has to sign in first
   };
 
   if (!hydrated) {
@@ -70,7 +81,9 @@ export function CartPageClient() {
           discount={0}
           shipping={0}
           disabled={!items.length}
-          onCheckout={openCheckout}
+          onCheckout={onSummaryAction}
+          actionLabel={checkout ? "ثبت سفارش و پرداخت آنلاین" : "ادامه خرید"}
+          busy={placingOrder}
         />
 
         <div className="rounded-xl bg-white p-5 text-center shadow-card">
@@ -89,7 +102,7 @@ export function CartPageClient() {
           removeItem={removeItem}
         />
 
-        {checkout && <CheckoutForm items={items} />}
+        {checkout && <CheckoutForm items={items} onProcessingChange={setPlacingOrder} />}
       </div>
     </div>
   );

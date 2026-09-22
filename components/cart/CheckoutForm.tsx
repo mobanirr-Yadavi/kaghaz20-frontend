@@ -45,7 +45,14 @@ function pickAddress(addresses: Address[], current: string | null) {
 
 type Status = "loading" | "ready" | "auth" | "error";
 
-export function CheckoutForm({ items }: { items: CartItem[] }) {
+export function CheckoutForm({
+  items,
+  onProcessingChange,
+}: {
+  items: CartItem[];
+  // Lets the cart summary button show the same "connecting to the gateway" state.
+  onProcessingChange?: (processing: boolean) => void;
+}) {
   const [status, setStatus] = useState<Status>("loading");
   const [loadError, setLoadError] = useState("");
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -104,8 +111,18 @@ export function CheckoutForm({ items }: { items: CartItem[] }) {
     setError("");
   };
 
+  useEffect(() => {
+    onProcessingChange?.(processing);
+  }, [processing, onProcessingChange]);
+
+  // The order can be placed from the summary button too, so bring errors into view.
+  useEffect(() => {
+    if (error) document.getElementById("checkout-error")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [error]);
+
   const submitOrder = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (processing) return;
     if (!items.length) {
       setError("سبد خرید شما خالی است.");
       return;
@@ -196,7 +213,7 @@ export function CheckoutForm({ items }: { items: CartItem[] }) {
 
   return shell(
     <>
-      <form className="mt-5 space-y-6" noValidate onSubmit={submitOrder}>
+      <form className="mt-5 space-y-6" id="checkout-order-form" noValidate onSubmit={submitOrder}>
         <section aria-labelledby="receiver-title" className="rounded-2xl border border-borderBlue/70 bg-[#F8FAFE] p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-sm font-black text-navy" id="receiver-title">اطلاعات گیرنده</h3>
@@ -464,7 +481,7 @@ export function CheckoutForm({ items }: { items: CartItem[] }) {
         </fieldset>
 
         {error ? (
-          <p className="rounded-lg bg-red-50 p-3 text-center text-sm font-bold text-red-700" role="alert">
+          <p className="scroll-mt-24 rounded-lg bg-red-50 p-3 text-center text-sm font-bold text-red-700" id="checkout-error" role="alert">
             {error}
           </p>
         ) : null}
