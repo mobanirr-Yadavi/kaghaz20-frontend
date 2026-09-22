@@ -88,10 +88,9 @@ export default function AboutPage() {
               چطور kaghaz را ارزان‌تر و هوشمندتر می‌رسانیم
             </h1>
             <p className="mt-4 text-sm font-semibold leading-8 text-muted sm:text-[15px]">
-              kaghaz 20 حاصل تلاش یک تیم حرفه‌ای است که با استفاده از فناوری،
-              خرید کاغذ را ساده‌تر، سریع‌تر و مقرون‌به‌صرفه‌تر کرده است. ما با
-              حذف واسطه‌ها، کاغذ باکیفیت را به قیمتی منصفانه به دست شما
-              می‌رسانیم.
+              کاغذ ۲۰ حاصل تلاش یک تیم حرفه‌ای است که با استفاده از فناوری، خرید
+              کاغذ را ساده‌تر، سریع‌تر و مقرون‌به‌صرفه‌تر کرده است. ما با حذف
+              واسطه‌ها، کاغذ باکیفیت را به قیمتی منصفانه به دست شما می‌رسانیم.
             </p>
             <div className="mt-6 grid grid-cols-2 gap-y-5 border-t border-borderBlue pt-5 sm:grid-cols-4 sm:divide-x sm:divide-x-reverse sm:divide-borderBlue">
               {storyHighlights.map((item) => (
@@ -119,12 +118,11 @@ export default function AboutPage() {
               درباره ما
             </p>
             <h2 className="mt-3 text-xl font-black leading-[1.8] text-navy sm:text-2xl lg:text-[28px]">
-              از یک مسئله واقعی تا kaghaz 20
+              از یک مسئله واقعی تا کاغذ ۲۰
             </h2>
             <div className="mt-4 space-y-3 text-sm font-semibold leading-8 text-muted sm:text-[15px]">
               <p>
-                ما در kaghaz 20 باور داریم که تهیه کاغذ نباید پیچیده و گران
-                باشد.
+                ما در کاغذ ۲۰ باور داریم که تهیه کاغذ نباید پیچیده و گران باشد.
               </p>
               <p>
                 سال‌ها وجود واسطه‌ها در زنجیره تأمین باعث افزایش قیمت و دشواری
@@ -133,8 +131,8 @@ export default function AboutPage() {
                 عادلانه برای همه.
               </p>
               <p>
-                امروز kaghaz 20 کنار شماست تا با حذف واسطه‌ها، کاغذ موردنیازتان
-                را با بهترین قیمت و در کوتاه‌ترین زمان تهیه کنید.
+                امروز کاغذ ۲۰ کنار شماست تا با حذف واسطه‌ها، کاغذ موردنیازتان را
+                با بهترین قیمت و در کوتاه‌ترین زمان تهیه کنید.
               </p>
             </div>
           </div>
@@ -191,10 +189,10 @@ export default function AboutPage() {
           <div className="grid gap-6 lg:grid-cols-2 lg:items-center lg:gap-10">
             <div>
               <h2 className="text-xl font-black leading-[1.8] text-navy sm:text-2xl lg:text-[28px]">
-                یک تیم نرم‌افزاری پشت kaghaz 20
+                یک تیم نرم‌افزاری پشت کاغذ ۲۰
               </h2>
               <p className="mt-4 text-sm font-semibold leading-8 text-muted sm:text-[15px]">
-                kaghaz 20 توسط یک تیم متخصص و علاقه‌مند به فناوری ساخته شده است.
+                کاغذ ۲۰ توسط یک تیم متخصص و علاقه‌مند به فناوری ساخته شده است.
                 ما با توسعه راهکارهای نرم‌افزاری، زنجیره تأمین را هوشمندتر کرده
                 و تجربه خرید بهتری برای شما فراهم می‌کنیم. هدف ما استفاده از
                 تکنولوژی برای ایجاد شفافیت، بهینه‌سازی فرآیندها و ارائه خدماتی
