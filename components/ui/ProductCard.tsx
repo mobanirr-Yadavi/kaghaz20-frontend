@@ -30,20 +30,29 @@ export function ProductCard({ product }: { product: Product }) {
         />
         <div className="absolute inset-x-2.5 top-2.5 flex items-start justify-between gap-1.5">
           {product.badge ? (
-            <span className={`rounded-lg px-2 py-1 text-[11px] font-black sm:text-xs ${badgeClasses[product.badge.tone]}`}>
+            <span
+              className={`rounded-lg px-2 py-1 text-[11px] font-black sm:text-xs ${badgeClasses[product.badge.tone]}`}
+            >
               {product.badge.label}
             </span>
           ) : (
             <span />
           )}
           {!inStock ? (
-            <span className="rounded-lg bg-white/90 px-2 py-1 text-[11px] font-black text-red-700 shadow-sm sm:text-xs">ناموجود</span>
+            <span className="rounded-lg bg-white/90 px-2 py-1 text-[11px] font-black text-red-700 shadow-sm sm:text-xs">
+              ناموجود
+            </span>
           ) : product.stockStatus === "limited" ? (
-            <span className="rounded-lg bg-white/90 px-2 py-1 text-[11px] font-black text-[#9a5b00] shadow-sm sm:text-xs">موجودی محدود</span>
+            <span className="rounded-lg bg-white/90 px-2 py-1 text-[11px] font-black text-[#9a5b00] shadow-sm sm:text-xs">
+              موجودی محدود
+            </span>
           ) : null}
         </div>
         {showSize ? (
-          <span className="absolute bottom-2.5 start-2.5 rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-black text-royal shadow-sm sm:text-xs" dir="ltr">
+          <span
+            className="absolute bottom-2.5 left-3 rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-black text-royal shadow-sm sm:text-xs"
+            dir="ltr"
+          >
             {product.size}
           </span>
         ) : null}
@@ -51,10 +60,15 @@ export function ProductCard({ product }: { product: Product }) {
 
       <div className="flex flex-1 flex-col p-3 sm:p-4">
         <div className="flex items-center justify-between gap-2">
-          <p className="truncate text-[11px] font-bold text-muted sm:text-xs">{product.category}</p>
+          <p className="truncate text-[11px] font-bold text-muted sm:text-xs">
+            {product.category}
+          </p>
           {inStock && product.stockStatus !== "limited" ? (
             <span className="inline-flex shrink-0 items-center gap-1 text-[10px] font-black text-emerald-600 sm:text-[11px]">
-              <span aria-hidden className="size-1.5 rounded-full bg-emerald-500" />
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full bg-emerald-500"
+              />
               موجود
             </span>
           ) : null}
@@ -69,19 +83,30 @@ export function ProductCard({ product }: { product: Product }) {
         </h3>
         {product.reviewCount > 0 ? (
           <p className="mt-1 text-xs font-bold text-textNavy sm:text-[13px]">
-            <span className="text-buttonGold" aria-hidden="true">★</span> {faNumber.format(product.rating)}{" "}
-            <span className="text-muted">({faNumber.format(product.reviewCount)} نظر)</span>
+            <span className="text-buttonGold" aria-hidden="true">
+              ★
+            </span>{" "}
+            {faNumber.format(product.rating)}{" "}
+            <span className="text-muted">
+              ({faNumber.format(product.reviewCount)} نظر)
+            </span>
           </p>
         ) : null}
 
         <div className="mt-auto pt-3">
           {product.oldPriceValue ? (
-            <del className="block text-xs font-semibold text-muted sm:text-[13px]">{faNumber.format(product.oldPriceValue)}</del>
+            <del className="block text-xs font-semibold text-muted sm:text-[13px]">
+              {faNumber.format(product.oldPriceValue)}
+            </del>
           ) : null}
           {/* Wraps "تومان" under the number on very narrow cards instead of overflowing. */}
           <p className="flex flex-wrap items-baseline gap-x-1 text-navy">
-            <strong className="text-lg font-black tracking-tight sm:text-[22px]">{faNumber.format(product.priceValue)}</strong>
-            <span className="text-xs font-bold text-muted sm:text-[13px]">تومان</span>
+            <strong className="text-lg font-black tracking-tight sm:text-[22px]">
+              {faNumber.format(product.priceValue)}
+            </strong>
+            <span className="text-xs font-bold text-muted sm:text-[13px]">
+              تومان
+            </span>
           </p>
           {inStock ? (
             <AddToCartButton
@@ -90,7 +115,11 @@ export function ProductCard({ product }: { product: Product }) {
               className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-navy text-[13px] font-black text-white shadow-soft transition duration-200 hover:bg-royal hover:shadow-card active:scale-[0.98] max-[359px]:[&>svg]:hidden sm:h-12 sm:text-sm"
             />
           ) : (
-            <button type="button" disabled className="mt-3 h-11 w-full cursor-not-allowed rounded-xl bg-slate-100 text-[13px] font-black text-slate-400 sm:h-12 sm:text-sm">
+            <button
+              type="button"
+              disabled
+              className="mt-3 h-11 w-full cursor-not-allowed rounded-xl bg-slate-100 text-[13px] font-black text-slate-400 sm:h-12 sm:text-sm"
+            >
               ناموجود
             </button>
           )}
