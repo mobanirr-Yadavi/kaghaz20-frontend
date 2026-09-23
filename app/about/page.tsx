@@ -231,7 +231,7 @@ export default function AboutPage() {
 
             <div className="order-2 text-center lg:order-none lg:text-right">
               <h2 className="text-xl font-black sm:text-2xl">
-                با kaghaz هوشمندتر خرید کنید
+                با kaghaz 20 هوشمندتر خرید کنید
               </h2>
               <p className="mt-2 text-xs font-semibold text-white/80 sm:text-sm">
                 کاغذ باکیفیت، قیمت منصفانه، ارسال سریع
