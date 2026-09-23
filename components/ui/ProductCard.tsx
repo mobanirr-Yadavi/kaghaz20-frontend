@@ -50,7 +50,7 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
         {showSize ? (
           <span
-            className="absolute bottom-2.5 left-3 rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-black text-royal shadow-sm sm:text-xs"
+            className="absolute bottom-2.5 left-4 rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-black text-royal shadow-sm sm:text-xs"
             dir="ltr"
           >
             {product.size}
