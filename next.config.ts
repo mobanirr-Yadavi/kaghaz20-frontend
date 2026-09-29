@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   // Keep Next.js compiler output out of the project root. This path is already
   // covered by the node_modules ignore rule and can be discarded at any time.
   distDir: "node_modules/.cache/next",
+  // Bots that get metadata inside <head> instead of streamed later: Next's default list
+  // plus Torob, whose crawler reads the product meta tags from the no-JS page.
+  htmlLimitedBots:
+    /[\w-]+-Google|Google-[\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight|torob/i,
   // Old placeholder blog slugs that may already be indexed or shared.
   async redirects() {
     return [

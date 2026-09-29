@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const description =
     richTextToPlain(product.description).slice(0, 160) || `خرید ${product.title} با ضمانت اصالت از کاغذ ۲۰`;
   const url = `/products/${product.slug}`;
+  const inStock = product.inStock ?? product.stockStatus !== "unavailable";
 
   return {
     title: product.title,
@@ -44,6 +45,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       description,
       url,
       images: [{ url: product.image, alt: product.title }],
+    },
+    // Torob's crawler reads these from the server HTML (og:image comes from openGraph above).
+    // Prices are in toman; without a discount the old price is the current price.
+    other: {
+      product_id: product.id,
+      product_name: product.title,
+      product_price: String(product.priceValue),
+      product_old_price: String(product.oldPriceValue ?? product.priceValue),
+      availability: inStock ? "instock" : "outofstock",
     },
   };
 }
