@@ -3,6 +3,6 @@ export const SITE_URL = "https://www.kaghaz20.ir";
 
 // Support line shown on the site; the tel: link uses +98 so it dials from any SIM.
 export const SUPPORT_PHONE = {
-  display: "09928220158",
+  display: "09120241178",
   tel: "tel:+989120241178",
 };
