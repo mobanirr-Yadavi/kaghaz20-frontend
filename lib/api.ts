@@ -2,6 +2,7 @@ import type { Product } from "@/types/product";
 import type { Category } from "@/types/category";
 import { getApiUrl } from "@/lib/env";
 import { normalizePaged, pagedQuery, type PagedResult, type RawPaged } from "@/lib/pagination";
+import { DEFAULT_PRODUCT_IMAGE, productImage } from "@/lib/productImage";
 
 type ApiResponse<T> = {
   isSuccess: boolean;
@@ -21,7 +22,6 @@ type ApiProduct = {
 type ApiCategory = { id: string; name: string; description?: string | null };
 
 const API_URL = getApiUrl();
-const DEFAULT_PRODUCT_IMAGE = "/images/double-a-uploaded.png";
 
 async function apiGet<T>(path: string): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, { cache: "no-store" });
@@ -61,8 +61,8 @@ function mapProduct(item: ApiProduct): Product {
     priceValue: Number(item.price),
     rating: 0,
     reviewCount: 0,
-    image: DEFAULT_PRODUCT_IMAGE,
-    gallery: [DEFAULT_PRODUCT_IMAGE],
+    image: productImage(item.name),
+    gallery: [productImage(item.name)],
     stockStatus:
       item.stock <= 0
         ? "unavailable"
