@@ -77,6 +77,16 @@ export default function RootLayout({
         <InstallPrompt />
         <VisitTracker />
         <Script
+          defer
+          src="https://umami.pcbazan.ir/script.js"
+          data-website-id="05cc6342-7fce-46bf-b068-906ea81fa992"
+        ></Script>
+        <Script
+          defer
+          src="https://umami.pcbazan.ir/recorder.js"
+          data-website-id="05cc6342-7fce-46bf-b068-906ea81fa992"
+        ></Script>
+        <Script
           id="goftino-widget"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
